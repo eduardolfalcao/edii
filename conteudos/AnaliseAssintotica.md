@@ -27,16 +27,23 @@ Marina pensou um pouco mais e percebeu que se um número não possuir divisor at
 ```c
 //Marina
 bool ehPrimo(unsigned int n){
-    for(int i = 2; i <= sqrt(n); i++){
+
+    //tiramos do for para computar a raiz quadrada apenas uma vez
+    //a complexidade de sqrt(n) é lg(n), mas para simplificar a introdução, assuma que é O(1)
+
+    double lim = sqrt(n);   
+    for(int i = 2; i <= lim; i++){
         if(n%i==0){
             return false;
         }
     }
     return true;
 } 
+
+//sobre sqrt(n): https://stackoverflow.com/questions/23103847/what-is-the-time-complexity-of-the-following-function
 ``` 
 
-É fácil perceber que se n não for primo, o algoritmo de Marina executará menos instruções, sendo, portanto, mais eficiente.
+É fácil perceber que se n for primo, o algoritmo de Marina executará menos instruções, sendo, portanto, mais eficiente.
 Note que as análises de desempenho sempre focam no pior caso, isto é, a função sendo chamada com um argumento que force a execução da maior quantidade de instruções possível, ou seja, casos em que o número é primo.
 O fato é que quando ambos executarem seus programas para valores muito altos de n, o programa de Daniel demorará demais, enquanto que o programa da Marina executará em um período de tempo viável.
 Se assumirmos que ambos os computadores levam **1ms para realizar uma divisão** (apenas para fins de comparação), vamos ver quanto tempo os programas de Daniel e Marina levariam para executar se recebessem como entrada os seguintes valores para n: 11, 101, 10⁶ + 3, 10¹⁰ + 19. 
@@ -160,7 +167,7 @@ int somaMatriz(int mat[10][10], int n){     //custo;    nº exec
 }
 ```
 
-Logo, **Tsomamatriz**= 1+1+(n+1)+n+n+(n*(n+1))+(n*n)+(n*n)+1= 3+3n+(n²+n)+2n²+1=**3n²+4n+4**.
+Logo, **Tsomamatriz**= 1+1+(n+1)+n+n+(n*(n+1))+2n²+2n²+1= 3+3n+(n²+n)+2n²+1=**5n²+4n+4**.
 
 ### Analisando as Curvas das Funções
 
@@ -174,13 +181,15 @@ Note que o eixo horizontal representa o crescimento da entrada **n**. O eixo ver
 - **Tsomalista** cresce linearmente com a entrada;
 - **Tsomamatriz** cresce em proporção quadrática com a entrada;
 
-Outro ponto importante é que quando estamos analisando a complexidade de tempo de um algoritmo, o que importa é **o que acontece quando n cresce demais**. Por exemplo, em **Tsomamatriz=3n²+4n+4**, se removermos as constantes 3, 4 e 4, teremos a função **n²**. A seguir vamos observar o que acontece com essas duas funções quando n é pequeno e quando n aumenta seu valor.
+Outro ponto importante é que quando estamos analisando a complexidade de tempo de um algoritmo, o que importa é **o que acontece quando n cresce demais**. Por exemplo, em **Tsomamatriz=3n²+4n+4**, se removermos as constantes 3, 4 e 4, teremos a função **n² + n**. No entanto, note que **n²** causa muito mais impacto que **n** quando a entrada se torna muito grande. Por exemplo, se **n=10⁶**, então **n²=10¹²**. Nesse caso, **1000000000000** é tão mais impactante e representativo que não vai fazer muita diferença adicionarmos **n=10⁶**, pois o resultado seria  **1000001000000**. Logo, advoga-se que além das constantes, os termos menos representativos da função também sejam descartados.
 
-n baix             |  n alto
+A seguir vamos observar o que acontece com essas duas , **f(n)=3n²+4n+4** e **f'(n)=n²**, quando n é pequeno e quando n aumenta seu valor.
+
+n baixo             |  n alto
 :-------------------------:|:-------------------------:
 ![](imgs/complexidade-funcao-quadratica-val-baixo.png)  |  ![](imgs/complexidade-funcao-quadratica-val-alto.png) 
 
-O que acontece é que quando o tamanho da entrada cresce, as constantes se tornam desprezíveis. Note que as curvas vermelhas e verdes quase se sobrepõem quando n é alto. Por essa razão, sempre que analisamos a complexidade de um algoritmo, as constantes são desprezadas. Como diferentes funções com diferentes constantes têm comportamento semelhante quando n aumenta, então agrupamos elas em conjuntos de funções que possuem o mesmo comportamento.
+Repetindo: o que acontece é que quando o tamanho da entrada cresce, as constantes e termos de menor potência se tornam desprezíveis. Note que as curvas vermelhas e verdes quase se sobrepõem quando n é alto. Por essa razão, sempre que analisamos a complexidade de um algoritmo, as constantes e termos de menor potência são desprezados. Como diferentes funções com diferentes constantes têm comportamento semelhante quando n aumenta, então agrupamos elas em conjuntos de funções que possuem o mesmo comportamento.
 
 - Funções que possuem complexidade de tempo constante são agrupadas na família **O(1)**
 - Funções que possuem complexidade de tempo linear são agrupadas na família **O(n)**. Exemplos:
@@ -200,9 +209,14 @@ Um exercício interessante é explorar o site do desmos (https://www.desmos.com/
  - Função logarítmica: y=log_2(n)
  - Função raiz quadrática: y=sqrt(n) 
  - Função linear: y=n
+ - Função linearitmica: y=nlg(n)
  - Função quadrática: y=n²
  - Função cúbica: y=n³
  - Função exponencial: y=eⁿ
+
+ Outro exercício: lembre de alguns algoritmos famosos, e.g., algoritmos de busca e algoritmos de ordenação, e tente descobrir qual a ordem de complexidade do algoritmo.
+
+ ## Notações Assintóticas
 
 
 
