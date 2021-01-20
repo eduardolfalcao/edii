@@ -108,9 +108,9 @@ int somaLista(int* a, int n){
     return soma;
 }
 ```
- Sem olhar pra a resposta abaixo, tente descobrir quantas unidades de tempo a função somaLista (**Tsomalista**) levaria. Dica (óbvia): faça devagarzinho, linha por linha, em vez de tentar analisar o bloco de código *for* de uma vez.
+Sem olhar pra a resposta abaixo, tente descobrir quantas unidades de tempo a função somaLista (**Tsomalista**) levaria. Dica (óbvia): faça devagarzinho, linha por linha, em vez de tentar analisar o bloco de código *for* de uma vez.
 
- A seguir é apresentada a análise da complexidade de tempo associada à função somaLista. 
+A seguir é apresentada a análise da complexidade de tempo associada à função somaLista. 
 
 ```c
  int somaLista(int* a, int n){
@@ -214,12 +214,116 @@ Um exercício interessante é explorar o site do desmos (https://www.desmos.com/
  - Função cúbica: y=n³
  - Função exponencial: y=eⁿ
 
- Outro exercício: lembre de alguns algoritmos famosos, e.g., algoritmos de busca e algoritmos de ordenação, e tente descobrir qual a ordem de complexidade do algoritmo.
+Outro exercício: lembre de alguns algoritmos famosos, e.g., algoritmos de busca e algoritmos de ordenação, e tente descobrir qual a ordem de complexidade do algoritmo.
 
- ## Notações Assintóticas
+## Notações Assintóticas
 
+Já discutimos sobre o fato que **Talg1=5n²+7** não tem um desempenho muito diferente de **Talg2=17n²+6n+8**, pois à medida em que n cresce muito, tendendo ao infinito, os termos *7* e *6n+8* se tornam irrelevantes. Em outras palavras, ambas as funções crescem em uma taxa quadrática com a entrada (n).
 
+Agora vamos à definição formal de como classificar funções em classes: **notações assintóticas**.
 
+### Notação Big-O (Limite Assintótico Superior)
 
+Em termos matemáticos, o que a notação Big-O visa explicar é uma relação entre duas funções.
+Lembra que Big-O é um sinônimo para "pior caso"?
 
+Vamos tomar o seguinte exemplo: **Talg1=5n²+7**.
+Dizemos que **Talg1** é **O(n²)**.
+Mas note que a curva da função **f(n)=5n²+7** está sempre acima de **g(n)=n²**.
 
+![alt text](imgs/big-oh-expl1.png)
+
+Então seria estranho e errado afirmar que a curva **f(n)=5n²+7** é limitada superiormente por **g(n)=n²**.
+
+No entanto, **g(n)** pode limitar superiormente **f(n)** se multiplicarmos **g(n)** por alguma constante **c**.
+Além disso, é provável que **c.g(n)** só limite **f(n)** superiormente a partir de certo ponto da curva, que chamaremos de **n₀**.
+
+Observe o gráfico abaixo:
+
+![alt text](imgs/big-oh.png)
+
+É a partir dessa narrativa, e principalmente dessa imagem, eu me sinto confortável em formalizar a notação Big-Oh.
+
+- Textualmente: 
+**"Uma função qualquer f(n) será limitada superiormente por uma função qualquer g(n) se existir constantes positivas c e n₀ tal que f(n) <= c.g(n) para todo n>=n₀."**
+- Em formalização matemática:
+**O(g(n)) = {f(n), se existirem constantes positivas c e n₀, tal que f(n) <= c.g(n), para todo n>=n₀}.**
+
+Agora vamos a um exemplo.
+Considere **f(n)=5n²+2n+1**.
+Por intuição, nós já sabemos que o termo mais poderoso da função é **n²**. Logo, assumimos que **g(n)=n²**.
+O que está faltando agora é encontrar **c** e **n₀** que satisfaça a inequação **f(n) <= c.g(n), para todo n>=n₀**.
+
+Substituindo **f(n)** e **g(n)** pelos valores da inequação, teremos: **5n²+2n+1 <= c.n²**.
+Teremos a seguinte inequação: **c >= 5 + 2/n + 1/n², para todo n>=n₀**.
+Dela podemos obter alguns pares de c e n₀:
+ - n₀=1 e c=8
+ - n₀=2 e c=6.25
+ - n₀=3 e c=5.77777777778
+
+Apresentando algum desses pares de c e n₀, nós conseguimos demonstrar formalmente que a função g(n) pode limitar superiormente f(n) quando n cresce, desde que g(n) seja multiplicado por c, e desde que n>=n₀. Uma dica interessante é visualizar as curvas f(n) e g(n) no site do desmos (https://www.desmos.com/calculator/5kgqgjpirx?lang=pt-BR).
+
+Em termos de comunicação, **f(n) <= c.g(n²), para c=8 e para todo n>=1**, diz-se que **f(n)=O(n²)**.
+
+### Notação Ômega (Limite Assintótico Inferior)
+
+Em termos matemáticos, a notação Ômega também visa explicar uma relação entre duas funções (assim como Big-O também explica uma relação entre duas funções).
+No entanto, Big-O busca encontrar um limite superior, enquanto **Ômega busca encontrar um limite inferior**.
+Lembre-se: Ômega é um sinônimo para "melhor caso", ou "melhor tempo de execução" para um algoritmo.
+
+Em **Ômega**, buscamos encontrar **g(n)**, ou seja, uma função que limite inferiormente **f(n)**.
+Para isto, **g(n)** pode ser multiplicada por alguma constante positiva **c**, e precisa ser um limite inferior para **f(n)** pelo menos a partir de um certo ponto da curva **n₀**.
+A imagem a seguir ilustra essas duas funções:
+![alt text](imgs/omega.png)
+
+É razoavelmente fácil construir a formalização de Ômega reutilizando a formalização de Big-O:
+- Textualmente: 
+"Uma função qualquer f(n) será **limitada inferiormente** por uma função qualquer g(n) se existir constantes positivas c e n₀ tal que **f(n) >= c.g(n)** para todo n>=n₀."**
+- Em formalização matemática:
+**Ω(g(n)) = {f(n), se existirem constantes positivas c e n₀, tal que f(n) >= c.g(n), para todo n>=n₀}.**
+
+Agora vamos a um exemplo, utilizando a mesma função da seção anterior: **f(n)=5n²+2n+1**.
+É fácil perceber que n³ não limita inferiormente f(n)=5n²+2n+1 pois n³ é mais "expressivo" do que o termo mais forte de f(n), n².
+A tentativa que faz mais sentido de se fazer o primeiro teste seria com **g(n)=n²**.
+
+Então vamos seguir a formalização: 
+- f(n) >= c.g(n)
+- 5n²+2n+1 >= c.n²
+- Analisando a expressão com calma, percebe-se que a expressão da esquerda sempre será maior que a da direita se c=0 
+- No entanto, por definição *c precisa ser positivo*, então consideremos **c>0**
+- Por outro lado, eu consigo afirmar com segurança que para c=5, a inequação ainda se mantém verdadeira sempre que n>=0
+    - Logo, seguem alguns possíveis valores para c e n: **c ∈ (0,5] e n₀=0**
+    - ![alt text](imgs/omega-exemplo.png)
+- Note que na medida em que aumentarmos o valor de c, não conseguiremos encontrar um valor para n₀ de tal modo que satisfaça **f(n) >= c.g(n), para todo n>=n₀**
+    - Por exemplo: abra o desmos e teste c=6
+
+Neste caso, como **f(n) >= c.g(n²), para todo c ∈ (0,5] e para todo n>=0**, diz-se que **f(n)=Ω(n²)**.
+
+### Notação Theta (Limite Assintótico Apertado)
+
+Em termos matemáticos, a notação Theta visa explicar uma relação entre duas funções.
+Enquanto Big-O tenta encontrar uma função g(n) que limite superiormente f(n), e enquanto Ômega busca encontrar uma função g(n) que limite inferiormente f(n), Theta busca encontrar simultaneamente as duas relações: busca encontrar g(n) tal que g(n) limite superiormente f(n) e ao mesmo tempo g(n) limita inferiormente f(n).
+Se Big-O pode ser considerado um sinônimo de "pior caso", e Ômega pode ser considerado um sinônimo de "melhor caso", **Theta poderá ser considerado um sinônimo de "caso médio"**.
+
+A formalização de Theta nada mais é do que a combinação de Big-O e Ômega:
+- Textualmente: 
+"Uma função qualquer f(n) será **limitada inferiormente e superiormente** por uma função qualquer g(n) se existir constantes positivas c₁, c₂ e n₀ tal que **c₁.g(n) <= f(n) >= c₂.g(n) para todo n>=n₀."**
+- Em formalização matemática:
+**Θ(g(n)) = {f(n), se existirem constantes positivas c₁, c₂ e n₀, tal que c₁.g(n) <= f(n) >= c₂.g(n), para todo n>=n₀}.**
+- De outra forma: 
+**Θ(g(n))=f(n) se Ω(g(n))=f(n) e O(g(n))=f(n)**
+
+A imagem a seguir ilustra essas duas funções:
+![alt text](imgs/theta.jpg)
+
+Agora vamos a um exemplo, utilizando a mesma função da seção anterior: **f(n)=5n²+2n+1**.
+Como nós já provamos que f(n)=O(n²) e f(n)=Ω(n²), por consequência podemos afirmar que f(n)=Θ(n²).
+Para completar a resposta só nos resta explicitar valores para c₁, c₂ e n₀. 
+- c₁.n² <= 5n²+2n+1 <= c₂.n²
+- c₁.n² <= 5n²+2n+1 ⇾ c₁=5 e n>=-1/2 (como precisa ser positivo, então n>0)
+- 5n²+2n+1 <= c₂.n² ⇾ c₂ >= 5 + 2/n + 1/n² (se n>=1, então c₂=8 resolve)
+- **Logo, c₁=5 e c₂=8 são valores que tornam a inequação c₁.n² <= 5n²+2n+1 <= c₂.n² verdadeira sempre que e n>=1, portanto, 5n²+2n+1=Θ(n²)**
+
+Lembre-se, encontrar Θ(g(n)) é melhor do que encontrar apenas Ω(g(n)) ou apenas O(g(n)) pois é mais rico em informações.
+
+Outras informações importantes: Ω(g(n)) e O(g(n)) são limites assintóticos inferior e superior que podem ser folgados ou apertados. Para limites inferior e superior que são sempre folgados utilizamos as letras minúsculas ω(g(n)) e o(g(n)).
