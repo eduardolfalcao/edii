@@ -307,9 +307,9 @@ Se Big-O pode ser considerado um sinônimo de "pior caso", e Ômega pode ser con
 
 A formalização de Theta nada mais é do que a combinação de Big-O e Ômega:
 - Textualmente: 
-"Uma função qualquer f(n) será **limitada inferiormente e superiormente** por uma função qualquer g(n) se existirem constantes positivas c₁, c₂ e n₀ tal que **c₁.g(n) <= f(n) >= c₂.g(n) para todo n>=n₀."**
+"Uma função qualquer f(n) será **limitada inferiormente e superiormente** por uma função qualquer g(n) se existirem constantes positivas c₁, c₂ e n₀ tal que **c₁.g(n) <= f(n) <= c₂.g(n) para todo n>=n₀."**
 - Em formalização matemática:
-**Θ(g(n)) = {f(n), se existirem constantes positivas c₁, c₂ e n₀, tal que c₁.g(n) <= f(n) >= c₂.g(n), para todo n>=n₀}.**
+**Θ(g(n)) = {f(n), se existirem constantes positivas c₁, c₂ e n₀, tal que c₁.g(n) <= f(n) <= c₂.g(n), para todo n>=n₀}.**
 - De outra forma: 
 **Θ(g(n))=f(n) se Ω(g(n))=f(n) e O(g(n))=f(n)**
 
@@ -368,5 +368,5 @@ Portanto, uma outra forma de provar que **f(n) ∈ ω(g(n))** é através da an�
 
 Por exemplo:
 - **2n² ∈ o(n)**
-    - lim(n ⇾ ∞)  2n²/n2
+    - lim(n ⇾ ∞)  2n²/n
     - lim(n ⇾ ∞)  2n = ∞
