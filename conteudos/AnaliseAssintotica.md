@@ -278,7 +278,7 @@ A imagem a seguir ilustra essas duas funções:
 
 É razoavelmente fácil construir a formalização de Ômega reutilizando a formalização de Big-O:
 - Textualmente: 
-"Uma função qualquer f(n) será **limitada inferiormente** por uma função qualquer g(n) se existir constantes positivas c e n₀ tal que **f(n) >= c.g(n)** para todo n>=n₀."**
+"Uma função qualquer f(n) será **limitada inferiormente** por uma função qualquer g(n) se existir constantes positivas c e n₀ tal que **f(n) >= c.g(n) para todo n>=n₀.**"
 - Em formalização matemática:
 **Ω(g(n)) = {f(n), se existirem constantes positivas c e n₀, tal que f(n) >= c.g(n), para todo n>=n₀}.**
 
@@ -307,13 +307,14 @@ Se Big-O pode ser considerado um sinônimo de "pior caso", e Ômega pode ser con
 
 A formalização de Theta nada mais é do que a combinação de Big-O e Ômega:
 - Textualmente: 
-"Uma função qualquer f(n) será **limitada inferiormente e superiormente** por uma função qualquer g(n) se existir constantes positivas c₁, c₂ e n₀ tal que **c₁.g(n) <= f(n) >= c₂.g(n) para todo n>=n₀."**
+"Uma função qualquer f(n) será **limitada inferiormente e superiormente** por uma função qualquer g(n) se existirem constantes positivas c₁, c₂ e n₀ tal que **c₁.g(n) <= f(n) >= c₂.g(n) para todo n>=n₀."**
 - Em formalização matemática:
 **Θ(g(n)) = {f(n), se existirem constantes positivas c₁, c₂ e n₀, tal que c₁.g(n) <= f(n) >= c₂.g(n), para todo n>=n₀}.**
 - De outra forma: 
 **Θ(g(n))=f(n) se Ω(g(n))=f(n) e O(g(n))=f(n)**
 
 A imagem a seguir ilustra essas duas funções:
+
 ![alt text](imgs/theta.jpg)
 
 Agora vamos a um exemplo, utilizando a mesma função da seção anterior: **f(n)=5n²+2n+1**.
@@ -322,8 +323,50 @@ Para completar a resposta só nos resta explicitar valores para c₁, c₂ e n�
 - c₁.n² <= 5n²+2n+1 <= c₂.n²
 - c₁.n² <= 5n²+2n+1 ⇾ c₁=5 e n>=-1/2 (como precisa ser positivo, então n>0)
 - 5n²+2n+1 <= c₂.n² ⇾ c₂ >= 5 + 2/n + 1/n² (se n>=1, então c₂=8 resolve)
-- **Logo, c₁=5 e c₂=8 são valores que tornam a inequação c₁.n² <= 5n²+2n+1 <= c₂.n² verdadeira sempre que e n>=1, portanto, 5n²+2n+1=Θ(n²)**
+- **Logo, c₁=5 e c₂=8 são valores que tornam a inequação c₁.n² <= 5n²+2n+1 <= c₂.n² verdadeira sempre que n>=1 (isto é, n₀=1), portanto, 5n²+2n+1=Θ(n²)**
 
 Lembre-se, encontrar Θ(g(n)) é melhor do que encontrar apenas Ω(g(n)) ou apenas O(g(n)) pois é mais rico em informações.
 
-Outras informações importantes: Ω(g(n)) e O(g(n)) são limites assintóticos inferior e superior que podem ser folgados ou apertados. Para limites inferior e superior que são sempre folgados utilizamos as letras minúsculas ω(g(n)) e o(g(n)).
+### Outras Notações: limites assintóticos "folgados" (o e w)
+
+Ω(g(n)) e O(g(n)) são limites assintóticos inferior e superior que podem ser folgados ou apertados.
+Para limites inferior e superior que são sempre folgados utilizamos as letras minúsculas ω(g(n)) e o(g(n)).
+
+Vamos relembrar a formalização da notação Big-O e Ômega:
+- **O(g(n)) = {f(n), se existirem constantes positivas c e n₀, tal que f(n) <= c.g(n), para todo n>=n₀}**
+- **Ω(g(n)) = {f(n), se existirem constantes positivas c e n₀, tal que f(n) >= c.g(n), para todo n>=n₀}.**
+
+Note que:
+- **2n² ∈ O(n²)** é um limite superior apertado
+- **2n ∈ O(n²)** é um limite superior folgado
+- **n²/2 ∈ Ω(n²)** é um limite inferior apertado
+- **n²/2 ∈ Ω(n)** é um limite inferior folgado
+
+Nós também podemos usar a notação **Little-o** para definir um limite superior folgado, e a notação **Little-ômega** para definir um limite inferior folgado.
+Logo, utilizando esta lógica, também podemos afirmar que:
+- **2n ∈ o(n²)**
+- **n²/2 ∈ ω(n)** 
+
+Para tanto, a definição de **Little-o** e **Little-ômega** são muito parecidas com Big-O e Big-Ômega:    
+- **o(g(n)) = {f(n), se existirem constantes positivas c e n₀, tal que f(n) < c.g(n), para todo n>=n₀}.**
+- **ω(g(n)) = {f(n), se existirem constantes positivas c e n₀, tal que f(n) > c.g(n), para todo n>=n₀}.**
+
+Intuitivamente, na notação **Little-o**, f(n) se torna insignificante em relação à g(n) quando n ⇾ ∞.
+Portanto, uma outra forma de provar que **f(n) ∈ o(g(n))** é através da análise do seguinte limite:
+
+![alt text](imgs/limite-little-o.jpg)
+
+Por exemplo:
+- **2n ∈ o(n²)**
+    - lim(n ⇾ ∞)  2n/n²
+    - lim(n ⇾ ∞)  2/n = 0
+
+Similarmente, na notação **Little-ômega**, g(n) se torna insignificante em relação à f(n) quando n ⇾ ∞.
+Portanto, uma outra forma de provar que **f(n) ∈ ω(g(n))** é através da análise do seguinte limite:
+
+![alt text](imgs/limite-little-omega.jpg)
+
+Por exemplo:
+- **2n² ∈ o(n)**
+    - lim(n ⇾ ∞)  2n²/n2
+    - lim(n ⇾ ∞)  2n = ∞
