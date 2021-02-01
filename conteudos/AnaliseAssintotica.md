@@ -375,7 +375,7 @@ Por exemplo:
 
 Para analisar a complexidade de algoritmos, podemos seguir algumas simples instruções.
 Antes de iniciarmos, lembremos que assumimos que as operações de computação simples executam em tempo constante.
-Segue uma listagem dessas operações simples, as quais podemos nos referir como **operações primitivas**:]
+Segue uma listagem dessas operações simples, as quais podemos nos referir como **operações primitivas**:
  - Atribuições: int num = 2
  - Operações aritméticas: (+,-,*,/,%, ...) 
      - Exponenciações como a^b podem ser O(1) ou O(b), a depender da estratégia do algoritmo usada (algumas sacrificam acurácia e são O(1))
@@ -384,32 +384,32 @@ Segue uma listagem dessas operações simples, as quais podemos nos referir como
  - Retornos: return num
  - Acesso à quaisquer variáveis e valores de qualquer posição em um array (array[i])
 
-Dito isto, a **complexidade de um algoritmo é representada pela soma dos custo das operações primitivas**.
+Dito isto, a **complexidade de um algoritmo é representada pela soma dos custos das operações primitivas**.
 A seguir, vamos fazer a análise de alguns algoritmos simples:
 
 ```c
 double computaMedia(double n1, double n2, double n3){
-    double media = 0;       
+    double media = 0;
     media = n1 + n2 + n3;
     media = media/3;
     return media;
-}
+}                           
 
 double calculaDelta(double a, double b, double c){
-    double delta = 0;
+    double delta = 0; 
     delta = b*b;
     delta = delta - (4*a*c);
     delta = sqrt(delta);
     return delta;
-}
+}                               
 
 double[] calculaX(double a, double b, double c){
     double delta = calculaDelta(a, b, c);
     double x[2];
     x[0] = ((-b) + delta) / 2*a;
     x[1] = ((-b) - delta) / 2*a;
-    return x;
-}
+    return x; 
+}                                           
 ```
 
 Primeiro, vamos analisar **computaMedia**:
@@ -419,7 +419,7 @@ double computaMedia(double n1, double n2, double n3){
     media = n1 + n2 + n3;   //3 ou c2
     media = media/3;        //2 ou c3
     return media;           //1 ou c4
-}
+}                           //TcomputaMedia = c1 + c2 + c3 + c4; O(1)
 ```
 Logo, o tempo de complexidade de **computaMedia** pode ser representado por **TcomputaMedia = c1 + c2 + c3 + c4**.
 Ou seja, computaMedia tem tempo constante, não dependendo da entrada, e portanto é **O(1)**.
@@ -430,17 +430,24 @@ double calculaDelta(double a, double b, double c){
     double delta = 0;           //1 ou c1
     delta = b*b;                //2 ou c2
     delta = delta - (4*a*c);    //4 ou c3
-    delta = sqrt(delta);        //lg(delta)
+    delta = sqrt(delta);        //lg(n), para n = b²-4ac
     return delta;               //1 ou c4
-}
+}                               //TcalculaDelta = c1 + c2 + c3 + c4 + lg(n)
+                                //TcalculaDelta = O(lgn), para n = b²-4ac
+                                //TcalculaDelta = Ω(1); pois quando delta for negativo a raiz quadrada não é calculada
+                                //quando b²-4ac>0, então TcalculaDelta = Θ(lg(n))
 
 double[] calculaX(double a, double b, double c){
     double delta = calculaDelta(a, b, c);   //TcalculaDelta 
-    double x[2];                            //1 (ou 2) ou c5
-    x[0] = ((-b) + delta) / 2*a;            //4 ou c6
-    x[1] = ((-b) - delta) / 2*a;            //4 ou c7
-    return x;                               //1 ou c8
-}
+    double x[2];                            //c5
+    x[0] = ((-b) + delta) / 2*a;            //c6
+    x[1] = ((-b) - delta) / 2*a;            //c7
+    return x;                               //c8
+}                                           //TcalculaX = c5 + c6 + c7 + c8 + TcalculaDelta
+                                            //Logo, TcalculaX = TcalculaDelta, visto que TcalculaDelta é mais representativo do que as constantes
+                                            //TcalculaX = O(lg(n)), para n = b²-4ac
+                                            //TcalculaX = Ω(1)
+                                            //quando b²-4ac>0, então TcalculaX = Θ(lg(n))
 ```
 
 O tempo de complexidade de **calculaDelta** pode ser representado por **TcalculaDelta = c1 + c2 + c3 + lg(delta) + c4**. 
@@ -448,8 +455,13 @@ Um outro ponto interessante é: quem é "delta"?
 Analisando a forma como delta é computado, sabemos que ele é uma função de a, b e c.
 Delta cresce quando b cresce, e diminui quando a ou c crescem.
 Neste caso, **TcalculaDelta** não é O(1) pois não é composto por uma simples soma de constantes, mas sim **O(lg(n)), onde n=b²-4ac**.
-Por fim, não é difícil perceber que **TcalculaX = TcalculaDelta + c5 +c6 + c7 +c8**, e como analisamos esses tempos em situações nas quais a entrada cresce podemos desconsiderar as contantes.
-Portanto,  **TcalculaX = TcalculaDelta = O(lg(n)), onde n=b²-4ac**.
+Note ainda que **TcalculaDelta = Ω(1)**, pois quando delta for negativo a raiz quadrada não é calculada.
+Porém, considerando situações nas quais **b²-4ac>0**, então a raiz quadrada sempre será calculada e poderíamos afirmar que, nesses casos, **TcalculaX = Θ(lg(n))**. 
+Por fim, não é difícil perceber que **TcalculaX = TcalculaDelta + c5 +c6 + c7 +c8**, e como analisamos esses tempos em situações nas quais a entrada cresce bastante, então podemos desconsiderar as contantes.
+Portanto:]
+- **TcalculaX = TcalculaDelta = O(lg(n)), onde n=b²-4ac**
+- **TcalculaX = TcalculaDelta =  Ω(1)**
+- **TcalculaX = TcalculaDelta =  Θ(lg(n)), onde n=b²-4ac e n>0**
 
 ### O que devemos fazer quando há Condicionais?
 
@@ -460,22 +472,23 @@ A seguir, usaremos como exemplo a operação de inserção de elemento no fim de
 
 ```c
 void duplicarCapacidade(){
-    lista = (int*)realloc(lista, 2*sizeof(lista)*sizeof(int));  //O(n)
+    lista = (int*)realloc(lista, 2*sizeof(lista)*sizeof(int));  //O(n) e Ω(1)
 }
 
 void inserirElementoNoFim(int valor){
     if(tamanho == sizeof(lista)){       //c1
-        duplicarCapacidade();           //O(n)
+        duplicarCapacidade();           //O(n) e Ω(1)
     }
     lista[tamanho] = valor;             //c2
     tamanho++;                          //c3
-}
+}                                       //TinserirElementoNoFim = O(n)
+                                        //TinserirElementoNoFim = Ω(1)
 ```
 
-A função duplicar capacidade tem complexidade O(n), visto que no pior caso não seria possível alocar mais espaço para a lista mantendo o mesmo endereço. 
-Neste caso, a alocação acontecerá em outro espaço na RAM, e isto irá requerer a cópia do elementos do array no endereço anterior para este novo espaço.
-Ao analisa a complexidade de **inserirElementoNoFim**, percebemos, portanto, que se o array estiver totalmente preenchido, o que representa o pior caso, a função duplicarCapacidade será executada.
-Logo, **TinserirElementoNoFim = O(n)**.
+A função duplicar capacidade tem complexidades Ω(1) e O(n), visto que no pior caso não seria possível alocar mais espaço para o array (variável lista) mantendo o mesmo endereço, e no melhor caso isto aconteceria com esforço computacional mínimo. 
+No pior caso, a alocação acontecerá em outro espaço na RAM, e isto irá requerer a cópia do elementos do array no endereço anterior para este novo espaço.
+Ao analisar a complexidade de **TinserirElementoNoFim**, percebemos, portanto, que se o array estiver totalmente preenchido a função duplicarCapacidade será executada.
+Logo, **TinserirElementoNoFim = TduplicarCapacidade + c'**, o que nos leva a **TinserirElementoNoFim = O(n)** e **TinserirElementoNoFim = Ω(1)**.
 No melhor caso, quando ainda houver espaço no array, essa inserção ocorrerá em tempo constante, **Ω(1)**.
 
 ### O que devemos fazer quando há iteração?
@@ -484,15 +497,15 @@ Sempre que houver iteração, basta multiplicar o custo dentro do laço pela qua
 A seguir vamos usar como exemplo a operação de inserção em posição específica em um ArrayList:
 ```c
 void inserirElementoEmPosicao(int valor, int posicao){
-    if(posicao >= 0 && posicao <= tamanho){         
-        if(tamanho == sizeof(lista)){               
-            duplicarCapacidade();                   
+    if(posicao >= 0 && posicao <= tamanho){ 
+        if(tamanho == sizeof(lista)){
+            duplicarCapacidade();
         }
-        for(int i = tamanho; i > posicao; i--){     
-            lista[i] = lista[i-1];                  
+        for(int i = tamanho; i > posicao; i--){
+            lista[i] = lista[i-1];
         }
-        lista[posicao] = valor;                     
-        tamanho++;                                 
+        lista[posicao] = valor;
+        tamanho++;
     }
 }
 ```
@@ -503,7 +516,7 @@ Segue a análise do algoritmo:
 void inserirElementoEmPosicao(int valor, int posicao){
     if(posicao >= 0 && posicao <= tamanho){         //c1
         if(tamanho == sizeof(lista)){               //c2
-            duplicarCapacidade();                   //O(n)
+            duplicarCapacidade();                   //O(n) e Ω(1)
         }
 
         for(int i = tamanho; i > posicao; i--){     
@@ -519,16 +532,26 @@ void inserirElementoEmPosicao(int valor, int posicao){
 ```
 
 Portanto: 
- - **TinserirElementoEmPosicao = c1 + c2 + O(n) + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.**
- - **TinserirElementoEmPosicao = O(n) + n\*(c4+c5+c6) + c1 + c2 + c3 + c4 + c7 + c8.**
- - **TinserirElementoEmPosicao = O(n)**
+ - Pior caso:
+     - TinserirElementoEmPosicao = c1 + c2 + **O(n)** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
+     - TinserirElementoEmPosicao = c1 + c2 + **n + c9** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
+     - TinserirElementoEmPosicao = n\*(**1+c4+c5+c6**) + *c1 + c2 + c3 + c4 + c7 + c8 + c9*.
+     - TinserirElementoEmPosicao = **c'**\*n + *c''*
+     - **TinserirElementoEmPosicao = O(n)**
+ - Melhor caso: 
+     - TinserirElementoEmPosicao = c1 + c2 + **Ω(1)** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
+     - TinserirElementoEmPosicao = c1 + c2 + **c9** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
+     - TinserirElementoEmPosicao = n\*(**c4+c5+c6**) + *c1 + c2 + c3 + c4 + c7 + c8 + c9*.
+     - TinserirElementoEmPosicao = **c'**\*n + *c''*
+     - **TinserirElementoEmPosicao = Ω(n)**
+ - Caso médio: se TinserirElementoEmPosicao = O(n) e TinserirElementoEmPosicao = Ω(n), então **TinserirElementoEmPosicao = Θ(n)**
 
 Agora vamos analisar um algoritmo para verificar se um vetor possui valores duplicados:
 
 ```c
 bool temDuplicata(int tamanho) {
-    for (int i = 0; i < tamanho; i++){   
-        for (int j = i + 1; j < tamanho; j++){
+    for (int i = 0; i < tamanho; i++){ 
+        for (int j = i + 1; j < tamanho; j++){ 
             if (arr[i] == arr[j]){
                 return true;
             }
