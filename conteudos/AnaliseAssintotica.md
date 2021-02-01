@@ -370,3 +370,274 @@ Por exemplo:
 - **2n² ∈ o(n)**
     - lim(n ⇾ ∞)  2n²/n
     - lim(n ⇾ ∞)  2n = ∞
+
+## Analisando a Complexidade de Algoritmos
+
+Para analisar a complexidade de algoritmos, podemos seguir algumas simples instruções.
+Antes de iniciarmos, lembremos que assumimos que as operações de computação simples executam em tempo constante.
+Segue uma listagem dessas operações simples, as quais podemos nos referir como **operações primitivas**:]
+ - Atribuições: int num = 2
+ - Operações aritméticas: (+,-,*,/,%, ...) 
+     - Exponenciações como a^b podem ser O(1) ou O(b), a depender da estratégia do algoritmo usada (algumas sacrificam acurácia e são O(1))
+     - Computar a raiz quadrada de um número é O(lg(n)), visto que esta é a complexidade do algoritmo usado: **newton-raphson**
+ - Avaliação de condições: if(num>2)
+ - Retornos: return num
+ - Acesso à quaisquer variáveis e valores de qualquer posição em um array (array[i])
+
+Dito isto, a **complexidade de um algoritmo é representada pela soma dos custo das operações primitivas**.
+A seguir, vamos fazer a análise de alguns algoritmos simples:
+
+```c
+double computaMedia(double n1, double n2, double n3){
+    double media = 0;       
+    media = n1 + n2 + n3;
+    media = media/3;
+    return media;
+}
+
+double calculaDelta(double a, double b, double c){
+    double delta = 0;
+    delta = b*b;
+    delta = delta - (4*a*c);
+    delta = sqrt(delta);
+    return delta;
+}
+
+double[] calculaX(double a, double b, double c){
+    double delta = calculaDelta(a, b, c);
+    double x[2];
+    x[0] = ((-b) + delta) / 2*a;
+    x[1] = ((-b) - delta) / 2*a;
+    return x;
+}
+```
+
+Primeiro, vamos analisar **computaMedia**:
+```c
+double computaMedia(double n1, double n2, double n3){
+    double media = 0;       //1 ou c1
+    media = n1 + n2 + n3;   //3 ou c2
+    media = media/3;        //2 ou c3
+    return media;           //1 ou c4
+}
+```
+Logo, o tempo de complexidade de **computaMedia** pode ser representado por **TcomputaMedia = c1 + c2 + c3 + c4**.
+Ou seja, computaMedia tem tempo constante, não dependendo da entrada, e portanto é **O(1)**.
+
+Agora, vamos analisar **calculaX**, o que naturalmente nos fará analisar **calculaDelta**:
+```c
+double calculaDelta(double a, double b, double c){
+    double delta = 0;           //1 ou c1
+    delta = b*b;                //2 ou c2
+    delta = delta - (4*a*c);    //4 ou c3
+    delta = sqrt(delta);        //lg(delta)
+    return delta;               //1 ou c4
+}
+
+double[] calculaX(double a, double b, double c){
+    double delta = calculaDelta(a, b, c);   //TcalculaDelta 
+    double x[2];                            //1 (ou 2) ou c5
+    x[0] = ((-b) + delta) / 2*a;            //4 ou c6
+    x[1] = ((-b) - delta) / 2*a;            //4 ou c7
+    return x;                               //1 ou c8
+}
+```
+
+O tempo de complexidade de **calculaDelta** pode ser representado por **TcalculaDelta = c1 + c2 + c3 + lg(delta) + c4**. 
+Um outro ponto interessante é: quem é "delta"? 
+Analisando a forma como delta é computado, sabemos que ele é uma função de a, b e c.
+Delta cresce quando b cresce, e diminui quando a ou c crescem.
+Neste caso, **TcalculaDelta** não é O(1) pois não é composto por uma simples soma de constantes, mas sim **O(lg(n)), onde n=b²-4ac**.
+Por fim, não é difícil perceber que **TcalculaX = TcalculaDelta + c5 +c6 + c7 +c8**, e como analisamos esses tempos em situações nas quais a entrada cresce podemos desconsiderar as contantes.
+Portanto,  **TcalculaX = TcalculaDelta = O(lg(n)), onde n=b²-4ac**.
+
+### O que devemos fazer quando há Condicionais?
+
+Quando temos condicionais, seja if-else ou switch-case, é sabido que apenas parte do código é executada.
+Como nós estamos interessados no pior caso, sempre analisamos todos os trechos, e por fim escolhemos o fluxo em que a computação é mais custosa. 
+
+A seguir, usaremos como exemplo a operação de inserção de elemento no fim de um ArrayList:,
+
+```c
+void duplicarCapacidade(){
+    lista = (int*)realloc(lista, 2*sizeof(lista)*sizeof(int));  //O(n)
+}
+
+void inserirElementoNoFim(int valor){
+    if(tamanho == sizeof(lista)){       //c1
+        duplicarCapacidade();           //O(n)
+    }
+    lista[tamanho] = valor;             //c2
+    tamanho++;                          //c3
+}
+```
+
+A função duplicar capacidade tem complexidade O(n), visto que no pior caso não seria possível alocar mais espaço para a lista mantendo o mesmo endereço. 
+Neste caso, a alocação acontecerá em outro espaço na RAM, e isto irá requerer a cópia do elementos do array no endereço anterior para este novo espaço.
+Ao analisa a complexidade de **inserirElementoNoFim**, percebemos, portanto, que se o array estiver totalmente preenchido, o que representa o pior caso, a função duplicarCapacidade será executada.
+Logo, **TinserirElementoNoFim = O(n)**.
+No melhor caso, quando ainda houver espaço no array, essa inserção ocorrerá em tempo constante, **Ω(1)**.
+
+### O que devemos fazer quando há iteração?
+
+Sempre que houver iteração, basta multiplicar o custo dentro do laço pela quantidade de iterações.
+A seguir vamos usar como exemplo a operação de inserção em posição específica em um ArrayList:
+```c
+void inserirElementoEmPosicao(int valor, int posicao){
+    if(posicao >= 0 && posicao <= tamanho){         
+        if(tamanho == sizeof(lista)){               
+            duplicarCapacidade();                   
+        }
+        for(int i = tamanho; i > posicao; i--){     
+            lista[i] = lista[i-1];                  
+        }
+        lista[posicao] = valor;                     
+        tamanho++;                                 
+    }
+}
+```
+
+Segue a análise do algoritmo:
+
+```c
+void inserirElementoEmPosicao(int valor, int posicao){
+    if(posicao >= 0 && posicao <= tamanho){         //c1
+        if(tamanho == sizeof(lista)){               //c2
+            duplicarCapacidade();                   //O(n)
+        }
+
+        for(int i = tamanho; i > posicao; i--){     
+                                                    //int i = tamanho;  c3
+                                                    //i > posicao;      c4*(n+1)
+                                                    //i--;              c5*n
+            lista[i] = lista[i-1];                  //                  c6*n
+        }
+        lista[posicao] = valor;                     //c7
+        tamanho++;                                  //c8
+    }
+}
+```
+
+Portanto: 
+ - **TinserirElementoEmPosicao = c1 + c2 + O(n) + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.**
+ - **TinserirElementoEmPosicao = O(n) + n\*(c4+c5+c6) + c1 + c2 + c3 + c4 + c7 + c8.**
+ - **TinserirElementoEmPosicao = O(n)**
+
+Agora vamos analisar um algoritmo para verificar se um vetor possui valores duplicados:
+
+```c
+bool temDuplicata(int tamanho) {
+    for (int i = 0; i < tamanho; i++){   
+        for (int j = i + 1; j < tamanho; j++){
+            if (arr[i] == arr[j]){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+```
+
+Note que o algoritmo possui 2 laços aninhados.
+Segue a análise de complexidade:
+
+```c
+bool temDuplicata(int tamanho) {
+    for (int i = 0; i < tamanho; i++){          // i = 0;       c1
+                                                //i < tamanho;  c2 * (n+1)
+                                                //i++;          c3 * n
+        for (int j = i + 1; j < tamanho; j++){  //j = i + 1;    c4 * n
+                                                //j < tamanho;  c5 * [(n−1)+(n−2)+(n−3)+(n−4)+…1]
+                                                //j < tamanho;  c5 * n(1+n)/2 = c5 *(n+n²)/2
+                                                //j++;          c6 * (n+n²)/2
+            if (arr[i] == arr[j]){              //              c7 * (n+n²)/2
+                return true;                    //              c8 * 0 (no pior caso a condição nunca é satisfeita)
+            }
+        }
+    }
+    return false;                               //              c9
+}
+```
+
+Lembrete: a soma dos termos de uma PA é dada por **Sn = n(a1 + an)/2**.
+- **TtemDuplicata = c1 + c2\*n + c2 + c3\*n + c4\*n + c5\*n/2 + c5\*n²/2 + c6\*n/2 + c6\*n²/2 + c7\*n/2 + c7\*n²/2 + c9**
+- **TtemDuplicata = n²/2\*(c5+c6+c7) + n/2\*(c5+c6+c7) + n\*(c2+c3+c4) + c1 + c2 + c9**
+- **TtemDuplicata = O(n²)**       
+
+Agora vamos analisar um algoritmo clássico: o Insertion Sort:
+```c
+void insertionSort(int arr[], int n){
+    int i, key, j;                          
+    for (i = 1; i < n; i++) {               
+        key = arr[i];                       
+        j = i - 1;                          
+        while (j >= 0 && arr[j] > key) {               
+            arr[j + 1] = arr[j];            
+            j = j - 1;                      
+        }
+        arr[j + 1] = key;                   
+    }
+}
+```
+
+Note que o Insertion Sort também possui 2 laços aninhados.
+Segue a análise de complexidade:
+
+```c
+void insertionSort(int arr[], int n){
+    int i, key, j;                          //          c1
+    for (i = 1; i < n; i++) {               //i = 1;    c2
+                                            //i < n;    c3 * n
+                                            //i++;      c4 * (n-1)
+        key = arr[i];                       //          c5 * (n-1)
+        j = i - 1;                          //          c6 * (n-1)
+        while (j >= 0 && arr[j] > key) {    //          c7 * *[(n−1)+(n−2)+(n−3)+(n−4)+…1] 
+                                            //          c7 * (n+n²)/2           
+            arr[j + 1] = arr[j];            //          c8 * n * (n-1)/2
+            j = j - 1;                      //          c9 * n * (n-1)/2
+        }
+        arr[j + 1] = key;                   //          c10 * (n-1)
+    }
+}
+```
+
+Em resumo, tudo que fizemos para analisar os algoritmos pode ser quebrado em 3 passos:
+1. identificar operações primitivas;
+2. identificar a quantidade de vezes que cada operação primitiva é executada;
+3. somar os custos.
+
+## Analisando a complexidade de algoritmos recursivos
+
+Alguns problemas possuem natureza recursiva, e isto permite que os programadores projetem soluções mais simples e elegantes para esses tipos de problemas.
+No entanto, para descobrir a complexidade destes algoritmos precisaremos resolver as recorrências, pois simplesmente somar os tempos dos fragmentos não será suficiente, dado que alguns fragmentos não terão ordem de complexidade definida (sendo mais específico, os fragmentos que constituem a chamada recursiva).
+Em suma, chamadas recursivas são empilhadas na memória, e para descobrir a complexidade basta encontrar uma função de n que descreva a quantidade de chamadas recursivas (ou, posto de outra forma, a altura da pilha).
+
+Existem 4 métodos para solucionar recorrências: iteração, árvore de recursão, substituição, e teorema mestre.
+
+**Iteração**
+
+A ideia é, iterativamente, calcular o tempo sobre a nova entrada computada, até chegar ao caso base. Em seguida, aplica-se um somatório nos custos para expressar a recorrência em termos de n.
+
+Considere o exemplo a seguir:
+```c
+int fatorial(int n){
+    if(n==1){
+        return 1;
+    } else{
+        return n * fatorial(n-1);
+    }
+}
+```
+
+Vamos calcular a recorrência iterativamente:
+- **T(n) = c + T(n-1)**
+- **T(n) = c + c + T(n-2)**
+- **T(n) = c + c + c + T(n-3)**
+- ...
+- **T(n) = (n-1)\*c + T(n-(n-1)) = cn - c + T(1)**
+- **T(n) = cn - c + c**
+- **T(n) = cn**
+
+Exercício: calcule iterativamente a complexidade de algoritmos descritos pelas seguintes recorrências.
+1. T(n) = n + T(n-1)
+2. T(n) = c + T(n/2)
