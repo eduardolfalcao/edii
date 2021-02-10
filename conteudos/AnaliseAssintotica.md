@@ -433,7 +433,7 @@ double calculaDelta(double a, double b, double c){
     delta = sqrt(delta);        //lg(n), para n = b²-4ac
     return delta;               //1 ou c4
 }                               //TcalculaDelta = c1 + c2 + c3 + c4 + lg(n)
-                                //TcalculaDelta = O(lgn), para n = b²-4ac
+                                //TcalculaDelta = O(lg(n)), para n = b²-4ac
                                 //TcalculaDelta = Ω(1); pois quando delta for negativo a raiz quadrada não é calculada
                                 //quando b²-4ac>0, então TcalculaDelta = Θ(lg(n))
 
@@ -534,17 +534,20 @@ void inserirElementoEmPosicao(int valor, int posicao){
 Portanto: 
  - Pior caso:
      - TinserirElementoEmPosicao = c1 + c2 + **O(n)** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
-     - TinserirElementoEmPosicao = c1 + c2 + **n + c9** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
-     - TinserirElementoEmPosicao = n\*(**1+c4+c5+c6**) + *c1 + c2 + c3 + c4 + c7 + c8 + c9*.
+     - TinserirElementoEmPosicao = c1 + c2 + **c9\*n + c10** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
+     - TinserirElementoEmPosicao = n\*(**c4+c5+c6+c9**) + *c1 + c2 + c3 + c4 + c7 + c8 + c10*.
      - TinserirElementoEmPosicao = **c'**\*n + *c''*
      - **TinserirElementoEmPosicao = O(n)**
- - Melhor caso: 
-     - TinserirElementoEmPosicao = c1 + c2 + **Ω(1)** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
-     - TinserirElementoEmPosicao = c1 + c2 + **c9** + c3 + c4\*(n+1) + c5\*n + c6\*n + c7 + c8.
-     - TinserirElementoEmPosicao = n\*(**c4+c5+c6**) + *c1 + c2 + c3 + c4 + c7 + c8 + c9*.
-     - TinserirElementoEmPosicao = **c'**\*n + *c''*
-     - **TinserirElementoEmPosicao = Ω(n)**
- - Caso médio: se TinserirElementoEmPosicao = O(n) e TinserirElementoEmPosicao = Ω(n), então **TinserirElementoEmPosicao = Θ(n)**
+ - Melhor caso (considerando que a primeira condição é sempre verdadeira): 
+     - Considere também que estamos inserindo ao fim do array, e ainda há espaço para esse novo elemento
+        - Note que nesse caso, o for executa a inicialização, e a comparação executa apenas uma vez, retornando *false*
+     - TinserirElementoEmPosicao = c1 + c2 + **Ω(1)** + c3 + **c4\*1 + c5\*0 + c6\*0** + c7 + c8.
+     - TinserirElementoEmPosicao = c1 + c2 + **c9** + c3 + c4  + c7 + c8.
+     - TinserirElementoEmPosicao = *c1 + c2 + c3 + c4 + c7 + c8 + c9*.
+     - **TinserirElementoEmPosicao = Ω(1)**
+ - Melhor caso (considerando que a primeira condição é sempre false): 
+     - **TinserirElementoEmPosicao = Ω(1)**
+ - Caso médio: como TinserirElementoEmPosicao = O(n) e **TinserirElementoEmPosicao = Ω(1)**, então não temos um caso médio
 
 Agora vamos analisar um algoritmo para verificar se um vetor possui valores duplicados:
 
@@ -566,14 +569,26 @@ Segue a análise de complexidade:
 
 ```c
 bool temDuplicata(int tamanho) {
-    for (int i = 0; i < tamanho; i++){          // i = 0;       c1
+    for (int i = 0; i < tamanho; i++){          //i = 0;        c1
                                                 //i < tamanho;  c2 * (n+1)
                                                 //i++;          c3 * n
         for (int j = i + 1; j < tamanho; j++){  //j = i + 1;    c4 * n
-                                                //j < tamanho;  c5 * [(n−1)+(n−2)+(n−3)+(n−4)+…1]
-                                                //j < tamanho;  c5 * n(1+n)/2 = c5 *(n+n²)/2
-                                                //j++;          c6 * (n+n²)/2
-            if (arr[i] == arr[j]){              //              c7 * (n+n²)/2
+            j = 1
+            tamanho = 10
+            //focar no intervalo:                                        
+            //n + (n-1) + (n-2) + ... + 1 
+            //1 + 2 + 3 + ... + (n-2) + (n-1) + n
+            //Sn = n(a1 + an)/2
+            //Sn = n(1 + n)/2 = (n²+n)/2 
+
+            //(n-1) + (n-2) + ... + 1
+            //1 + 2 + 3 + ... + (n-2) + (n-1)
+            //Sn = n(a1 + an)/2
+            //Sn = (n-1)(1 + (n-1))/2 = (n-1)(n)/2 = (n²-n)/2  
+
+                                                //j < tamanho;  c5 * (n²+n)/2
+                                                //j++;          c6 * (n²-n)/2
+            if (arr[i] == arr[j]){              //              c7 * (n²-n)/2
                 return true;                    //              c8 * 0 (no pior caso a condição nunca é satisfeita)
             }
         }
@@ -583,28 +598,68 @@ bool temDuplicata(int tamanho) {
 ```
 
 Lembrete: a soma dos termos de uma PA é dada por **Sn = n(a1 + an)/2**.
-- **TtemDuplicata = c1 + c2\*n + c2 + c3\*n + c4\*n + c5\*n/2 + c5\*n²/2 + c6\*n/2 + c6\*n²/2 + c7\*n/2 + c7\*n²/2 + c9**
-- **TtemDuplicata = n²/2\*(c5+c6+c7) + n/2\*(c5+c6+c7) + n\*(c2+c3+c4) + c1 + c2 + c9**
+- **TtemDuplicata = c1 + c2\*n + c2 + c3\*n + c4\*n + c5\*n/2 + c5\*n²/2 - c6\*n/2 + c6\*n²/2 - c7\*n/2 + c7\*n²/2 + c8\*0 + c9**
+- **TtemDuplicata = n²/2\*(c5+c6+c7) + n/2\*(c5-c6-c7) + n\*(c2+c3+c4) + c1 + c2 + c9**
 - **TtemDuplicata = O(n²)**       
 
 Agora vamos analisar um algoritmo clássico: o Insertion Sort:
 ```c
 void insertionSort(int arr[], int n){
-    int i, key, j;                          
-    for (i = 1; i < n; i++) {               
-        key = arr[i];                       
-        j = i - 1;                          
-        while (j >= 0 && arr[j] > key) {               
-            arr[j + 1] = arr[j];            
-            j = j - 1;                      
+    int i, key, j;
+    for (i = 1; i < n; i++) {
+        key = arr[i];
+        j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
         }
-        arr[j + 1] = key;                   
+        arr[j + 1] = key;
     }
 }
 ```
 
 Note que o Insertion Sort também possui 2 laços aninhados.
 Segue a análise de complexidade:
+
+```c
+void insertionSort(int arr[], int n){
+    int i, key, j;                          //c1                                  
+    for (i = 1; i < n; i++) {               //c2        i=1
+                                            //c3*n      i<n
+                                            //c4*(n-1)  i++
+        key = arr[i];                       //c5*(n-1)      
+        j = i - 1;                          //c6*(n-1)
+
+        // intervalo?
+        // [0,j] 
+        // j pode assumir os seguintes valores: {0, 1, 2, ... , n-2}
+            // porém, precisamos contar a quantidade verificações da condição do while:
+            // while (j >= 0 && arr[j] > key)
+                // quando j = 0, no pior caso, verificamos a condição 2 vezes
+                    // para j = 0, a primeira verificação é verdadeira, mas no fim do bloco, j é decrementado
+                    // para j = -1, temos a segunda verificação, que retornará false 
+                // quando j = 1, no pior caso, verificamos a condição 3 vezes
+                    // para j = 1, a primeira verificação é verdadeira, mas no fim do bloco, j é decrementado
+                    // para j = 0, teremos a segunda verificação verdadeira, mas no fim do bloco, j é decrementado
+                    // para j = -1, temos a terceira verificação, que retornará false 
+            // 2 + 3 + ... + n 
+
+        // Sn = n(a1 + an)/2
+        // Sn = (n-1)(2+n)/2 = (2n+n²-2-n)/2 = (n²+n-2)/2                
+        
+        // 2 + 3 + ... + n-1
+        // Sn = n(a1 + an)/2
+        // Sn = (n-2)(2 + n - 1)/2 = (n-2)(n+1)/2 = (n²-n-2)/2
+
+
+        while (j >= 0 && arr[j] > key) {    //c7*(n²+n-2)/2              
+            arr[j + 1] = arr[j];            //c8*(n²-n-2)/2            
+            j = j - 1;                      //c9*(n²-n-2)/2
+        }
+        arr[j + 1] = key;                   //c10*(n-1)
+    }
+}
+```
 
 ```c
 void insertionSort(int arr[], int n){
@@ -643,24 +698,89 @@ A ideia é, iterativamente, calcular o tempo sobre a nova entrada computada, at�
 
 Considere o exemplo a seguir:
 ```c
-int fatorial(int n){
-    if(n==1){
-        return 1;
-    } else{
-        return n * fatorial(n-1);
+int fatorial(int n){                //T(n)
+    if(n==1){                       //c1
+        return 1;                   //c2
+    } else{                         //c3
+        return n * fatorial(n-1);   //c4 + T(n-1)
     }
 }
 ```
 
-Vamos calcular a recorrência iterativamente:
-- **T(n) = c + T(n-1)**
-- **T(n) = c + c + T(n-2)**
-- **T(n) = c + c + c + T(n-3)**
-- ...
-- **T(n) = (n-1)\*c + T(n-(n-1)) = cn - c + T(1)**
-- **T(n) = cn - c + c**
-- **T(n) = cn**
+Vamos calcular a recorrência iterativamente: T(n) = c1 + c2 + c3 + c4 + T(n-1)
+- Cálculo principal: T(n) = c + T(n-1)
+    - Cálculo auxiliar: T(n-1) = c + T(n-1-1) = c + T(n-2)
+- Cálculo principal: T(n) = c + c + T(n-2)
+    - Cálculo auxiliar: T(n-2) = c + T(n-2-1) = c + T(n-3)
+- Cálculo principal: T(n) = c + c + c + T(n-3) = 3c + T(n-3)
+    - Cálculo auxiliar: T(n-3) = c + T(n-3-1) = c + T(n-4)
+- Cálculo principal: T(n) = 3c + c + T(n-4) = 4c + T(n-4)
+- ... (note que teremos n-1 chamadas, pois o caso base é 1)
+- Cálculo principal: T(n) = (n-1)*c + T(n-(n-1)) = cn - c + T(1)
+- Portanto, **T(n) ∈ O(n)**
+
 
 Exercício: calcule iterativamente a complexidade de algoritmos descritos pelas seguintes recorrências.
-1. T(n) = n + T(n-1)
-2. T(n) = c + T(n/2)
+1. Selection-Sort: T(n) = n + T(n-1)
+2. Busca binária: T(n) = c + T(n/2)
+3. T(n) = 2\*T(n/2) + cn
+
+- **Cálculo principal: T(n) = n + T(n-1)**
+    - Cálculo aux: T(n-1) = n-1 + T((n-1)-1) = n-1 + T(n-2)
+- Cálculo principal: T(n) = n + n-1 + T(n-2) = 2n - 1 + T(n-2)
+    - Cálculo aux: T(n-2) = n-2 + T((n-2)-1) = n - 2 + T(n-3)
+- Cálculo principal: T(n) = 2n - 1 + n - 2 + T(n-3) = 3n - 3 + T(n-3)
+- ...
+- O que estamos procurando é o caso básico, i.e., T(1)
+    - isto irá acontecer quando chegarmos em T(n-(n-1))
+- Cálculo principal: T(n) = cn - c + T(n-c)
+    - portanto, fazemos c = n-1
+- Cálculo principal: T(n) = (n-1)\*n - n - 1 + T(n-(n-1))
+- Cálculo principal: T(n) = n² - n - n - 1 + T(1)
+- Cálculo principal: T(n) = n² - 2n
+- Portanto, **T(n) ∈ O(n²)**
+
+- **Cálculo principal: T(n) = c + T(n/2)**
+    - Cálculo aux: T(n/2) = c + T((n/2)/2) = c + T(n/4)
+- Cálculo principal: T(n) = c + c + T(n/4) = 2c + T(n/4)
+    - Cálculo aux: T(n/4) = c + T((n/4)/2) = c + T(n/8)
+- Cálculo principal: T(n) = 2c + c + T(n/8) = 3c + T(n/8)
+    - é possível perceber um padrão... note que 2³=8, e temos 3c...
+    - que tal substituirmos 3 por uma variável chamada k?
+    - **T(n) = kc + T(n/2ᵏ)**
+    - nós sempre procuramos pelo caso base: T(1)
+        - T(1) = T(n/2ᵏ)
+        - 1 = n/2ᵏ
+        - n = 2ᵏ
+        - se aplicarmos lg₂(n) aos dois lados da equação, teremos:
+            - lg₂(n) = lg₂(2ᵏ)
+            - **k = lg₂(n)**
+- Logo, substituindo k por lg₂(n) na relação de recorrência **T(n) = kc + T(n/2ᵏ)**, teremos:
+    - T(n) = lg₂(n)\*c + T(n/n)
+    - T(n) = lg₂(n)\*c + T(1)
+    - **T(n) ∈ O(lg₂(n))**        
+
+- **Cálculo principal: T(n) = 2T(n/2) + cn**
+    -  Cálculo aux: T(n/2) = 2T(n/4) + cn/2
+- Cálculo principal: T(n) = 2[2T(n/4) + cn/2] + cn = 4T(n/4) + cn + cn = 4T(n/4) + 2cn
+    - Cálculo aux: T(n/4) = 2T(n/8) + cn/4
+- Cálculo principal: T(n) = 4[2T(n/8) + cn/4] + 2cn = 8T(n/8) + cn + 2cn = 8T(n/8) + 3cn
+    - mais uma vez, conseguimos perceber um padrão... o que acontece se substituirmos 8 por 2³
+    - T(n) = 2³T(n/2³) + 3cn 
+        - que tal substituirmos 3 por uma variável chamada k?
+        - T(n) = 2ᵏT(n/2ᵏ) + kcn 
+        - note que este é o padrão, sempre que a recursão se aprofundar, a única coisa que muda é o valor de k
+        - no caso, queremos encontrar o fim da recursão, ou seja, quando T(n/2ᵏ) = 1
+            - n/2ᵏ = 1
+            - n = 2ᵏ
+            - agora nós podemos encontrar k em função de n:
+                - aplicando log₂ nos dois lados da equação
+                - log₂(n) = log₂(2ᵏ)
+                - k = log₂(n)
+- Logo, a expressão final seria: 
+    - T(n) = T(1) + kcn 
+    - e como k = log₂(n), **então T(n) = log₂(n).c.n**
+- Por isto, concluímos que **2T(n/2) + cn ∈ O(n.log(n))**
+
+**Árvore de Recursão**
+
