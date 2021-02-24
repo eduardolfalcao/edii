@@ -782,5 +782,50 @@ Exercício: calcule iterativamente a complexidade de algoritmos descritos pelas 
     - e como k = log₂(n), **então T(n) = log₂(n).c.n**
 - Por isto, concluímos que **2T(n/2) + cn ∈ O(n.log(n))**
 
-**Árvore de Recursão**
+**Método da Árvore de Recursão**
+
+A ideia deste método é que desenhemos uma árvore para melhor entendermos o custo de cada chamada da função, e quantidade de chamadas de funções.
+Cada nó explicita o custo daquela chamada.
+As arestas representam uma nova chamada recursiva.
+
+Vamos começar com um exemplo bem simples, o cálculo de fatorial usando recursão.
+
+```c
+int fatorial(int n){                //T(n)
+    if(n==1){                       //c1
+        return 1;                   //c2
+    } else{                         //c3
+        return n * fatorial(n-1);   //c4 + T(n-1)
+    }
+}
+```
+
+Passos:
+1. Estabelecer equação de recorrência
+2. Calcular altura da árvore
+3. Entender o custo em cada nível da árvore
+4. Calcular o custo total
+
+Segue imagem com a execução dos passos para algoritmo fatorial:
+
+![alt text](imgs/arvore-recursao-fatorial.png)
+
+Agora vamos analisar o merge-sort:
+```c
+void mergeSort(int vetor[], int comeco, int fim){
+    if (comeco < fim) {
+        int meio = (fim+comeco)/2;
+        mergeSort(vetor, comeco, meio);
+        mergeSort(vetor, meio+1, fim);
+        merge(vetor, comeco, meio, fim);
+    }
+}
+```
+
+Segue imagem com detalhamento da árvore de recursão para algoritmo do merge sort:
+
+![alt text](imgs/arvore-recursao-mergesort.png)
+
+
+
 
