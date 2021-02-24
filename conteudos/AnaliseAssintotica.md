@@ -826,6 +826,25 @@ Segue imagem com detalhamento da árvore de recursão para algoritmo do merge so
 
 ![alt text](imgs/arvore-recursao-mergesort.png)
 
+Agora vamos analisar a busca binária:
 
+```c
+int buscaBinaria (int x, int v[], int esq, int dir){
+    if(esq < dir){						
+        int meio = (esq + dir)/2;
+        if (x == v[meio])			
+            return meio;			
+        else if (x > v[meio])		
+            return buscaBinaria(x, v, meio+1, dir);
+        else
+            return buscaBinaria(x, v, esq, meio-1);
+    } else
+        return -1; // não encontrado
+}
+```
+
+Segue imagem com detalhamento da árvore de recursão para algoritmo de busca binária:
+
+![alt text](imgs/arvore-recursao-buscabinaria.png)
 
 
