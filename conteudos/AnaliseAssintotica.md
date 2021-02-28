@@ -848,3 +848,142 @@ Segue imagem com detalhamento da árvore de recursão para algoritmo de busca bi
 ![alt text](imgs/arvore-recursao-buscabinaria.png)
 
 
+**O Teorema Mestre**
+
+O método iterativo e árvore de recursão representam basicamente a mesma estratégia. A árvore de recursão ajuda visualmente a entendermos melhor os custos de cada nível da chamada recursiva até chegarmos ao caso base. Por essa razão, geralmente se apresenta esses dois métodos, pois são mais fáceis de serem compreendidos. Por outro lado, às vezes é um mecanismo considerado trabalhoso.
+
+Uma alternativa que requer menos trabalho é o Teorema Mestre. O Teorema Mestre é mais simples, pois fazemos menos operações matemáticas para conseguir identificar a classe de complexidade de um algoritmo. O Teorema Mestre é quase como uma receita de bolo, aplicável quando a recorrência tem uma forma conhecida, representa a seguir:
+ - **T(n) = a.T(n/b) + f(n)**, considerando que a>=1, b>1, e f(n) não negativa
+
+ Note que:
+  - **a** representa a quantidade de chamadas recursivas (subproblemas)
+  - **b** representa como a entrada é diminuída para as próximas chamadas recursivas
+  - **f(n)** representa o custo computacional em cada execução (recursiva) da função
+
+O Teorema Mestre é como um switch-case:
+- quando f(n) < n^(logb(a)) → T(n) = Θ(n^(logb(a)))
+- quando f(n) = n^(logb(a)) → T(n) = Θ(f(n)*(logb(n)))
+- quando f(n) > n^(logb(a)) → T(n) = Θ(f(n))
+
+  **Importante:** antes de aplicarmos o teorema, precisamos verificar se a relação de recorrência obedece às restrições a>=1, b>1, e f(n) não negativa.
+
+Exemplos:
+1. T(n) = 8T(n/2) + 1000n²
+2. T(n) = 2T(n/2) + 10n
+3. T(n) = 2T(n/2) + n²
+
+
+- Exemplo 1: T(n) = 8T(n/2) + 1000n²
+    - identificar a, b e f(n):
+        - a: 8
+        - b: 2
+        - f(n): 1000n²
+    - entender quem é n^(logb(a)):
+        - n^(log₂(8))
+        - n³
+    - switch-case:
+        - 1000n² está abaixo, igual, ou acima de n³? (em termos de classe de complexidade)
+        - n² < n³
+    - Portanto: T(n) = Θ(n^(log₂(8))) → T(n) = Θ(n³)
+
+- Exemplo 2: T(n) = 2T(n/2) + 10n
+    - identificar a, b e f(n):
+        - a: 2
+        - b: 2
+        - f(n): 10n
+    - entender quem é n^(logb(a)):
+        - n^(log₂(2)) → n
+    - switch-case:
+        - f(n) está abaixo, igual, ou acima de n^(logb(a))? (em termos de classe de complexidade)
+        - 10n está abaixo, igual, ou acima de n? (em termos de classe de complexidade)
+        - 10n = n
+    - Portanto: T(n) = Θ(10n*(log₂(n))) → Θ(n*log₂(n))
+
+- Exemplo 3: T(n) = 2T(n/2) + n²
+    - identificar a, b e f(n):
+        - a: 2
+        - b: 2
+        - f(n): n²
+    - entender quem é n^(logb(a)):
+        - n^(log₂(2)) → n
+    - switch-case:
+        - f(n) está abaixo, igual, ou acima de n^(logb(a))? (em termos de classe de complexidade)
+        - n² > n
+    - Portanto: T(n) = Θ(n²)
+
+Agora vou tornar a definição do Teorema Mestre completa:
+- quando f(n) = O(n^(logb(a)-ε)) → T(n) = Θ(n^(logb(a))), e ε>0
+- quando f(n) = Θ(n^(logb(a))) → T(n) = Θ(f(n)*(logb(n)))
+- quando f(n) = Ω(n^(logb(a)+ε)) → T(n) = Θ(f(n)), e ε>0
+   - condição de regularidade: a\*f(n/b) <= c\*f(n), para algum c<1 e n suficientemente grande
+
+- Exemplo 1: T(n) = 8T(n/2) + 1000n²
+    - identificar a, b e f(n):
+        - a: 8
+        - b: 2
+        - f(n): 1000n²
+    - entender quem é n^(logb(a)):
+        - n^(log₂(8))
+        - n³
+    - switch-case:
+        - 1000n² está abaixo, igual, ou acima de n³? (em termos de classe de complexidade)
+        - **mais formalmente: f(n) = O(n^(logb(a)-ε))**
+            - **1000n² = O(n³⁻ᵋ)**
+            - **para ε=1, n² = O(n²)**
+        - informalmente: n² < n³
+    - Portanto: T(n) = Θ(n^(log₂(8))) → T(n) = Θ(n³)
+
+- Exemplo 2: T(n) = 2T(n/2) + 10n
+    - identificar a, b e f(n):
+        - a: 2
+        - b: 2
+        - f(n): 10n
+    - entender quem é n^(logb(a)):
+        - n^(log₂(2)) → n
+    - switch-case:
+        - f(n) está abaixo, igual, ou acima de n^(logb(a))? (em termos de classe de complexidade)
+        - **mais formalmente: f(n) = Θ(n^(logb(a)))**
+            - 10n = Θ(n) → n = Θ(n)
+        - informalmente:
+            - 10n está abaixo, igual, ou acima de n? (em termos de classe de complexidade)
+            - 10n = n
+    - Portanto: T(n) = Θ(10n*(log₂(n))) → Θ(n*log₂(n))
+
+- Exemplo 3: T(n) = 2T(n/2) + n²
+    - identificar a, b e f(n):
+        - a: 2
+        - b: 2
+        - f(n): n²
+    - entender quem é n^(logb(a)):
+        - n^(log₂(2)) → n
+    - switch-case:
+        - f(n) está abaixo, igual, ou acima de n^(logb(a))? (em termos de classe de complexidade)
+        - **mais formalmente: f(n) = Ω(n^(logb(a)+ε))**
+            - **n² = Ω(n¹⁺ᵋ)**
+            - **para ε=1, n² = Ω(n²)**
+            - **condição de regularidade: a\*f(n/b) <= c\*f(n), para algum c<1 e n suficientemente grande**
+                - primeiro desenvolvemos a\*f(n/b): 
+                    - 2\*f(n/2) = 2\*(n/2)² = 2n²/4 = n²/2
+                - depois procuramos c:
+                    - n²/2 <= c\*f(n)
+                    - n²/2 <= cn²
+                    - c >= 1/2
+                    - **logo, c = 1/2 satisfaz a condição c<1** 
+        - informalmente: n² > n
+    - Portanto: T(n) = Θ(n²)
+
+- Exemplo 4: T(n) = T(2n/3) + 1
+    - identificar a, b e f(n):
+        - a: 1
+        - b: 3/2
+        - f(n): 1
+    - entender quem é n^(logb(a)):
+        - n^(log₃/₂(1))
+        - n^(0)
+        - 1
+    - switch-case:
+        - 1 está abaixo, igual, ou acima de 1? (em termos de classe de complexidade)
+        - 1 está igual a 1
+        - **mais formalmente: f(n) = Θ(n^(logb(a)))**
+            - 1 = Θ(n^(0)) = Θ(1)
+    - Portanto: T(n) = Θ(f(n)\*(logb(n))) → T(n) = Θ(log₃/₂(n))
