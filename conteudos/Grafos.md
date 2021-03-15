@@ -214,3 +214,6 @@ Por exemplo: uma árvore na qual as arestas não possuem direção é um grafo a
 
 ![alt text](imgs/undirected-acyclic-graph.png) | ![alt text](imgs/directed-acyclic-graph.png)|
 | -------- | ---------- | 
+
+Ciclos em grafos podem causar alguns problemas, no sentido de dificultar encontrar o menor caminho entre 2 nós, por exemplo.
+Falaremos mais sobre ciclos e como resolver esse problema nas próximas aulas.
