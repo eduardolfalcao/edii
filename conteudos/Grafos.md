@@ -155,7 +155,7 @@ Muitas decisões importantes são tomadas baseadas no tipo de grafo, se ele é d
 Grafos densos geralmente são armazenados e manipulados com **matrizes de adjacências**.
 Grafos esparsos geralmente são armazenados e manipulados com **listas de adjacências**.
 
-Grafos podem ter caminhos.
+Grafos podem ter passeios.
 Um **passeio (walk)** é uma sequência de pares adjacentes conectados por uma aresta.
 Observe o grafo que representa os links em páginas web.
 
@@ -163,7 +163,6 @@ Observe o grafo que representa os links em páginas web.
 
 Neste grafo, podemos citar todos os passeios possíveis partindo de A:
  - \<A,C,E,I,H\>
-     - \<A\>
      - \<A,C\>
      - \<A,C,E\>
      - \<A,C,E,I\>
@@ -175,8 +174,8 @@ Neste grafo, podemos citar todos os passeios possíveis partindo de A:
      - \<A,B,D,C,E,I\>
      - \<A,B,D,C,E,I,H\>
  - \<A,B,D,G\>
- - \<A,B,D,H,I\>
-     - \<A,B,D,H\>
+ - \<A,B,D,F,H\>
+     - \<A,B,D,F\>
 
 Todos os passeios citados anteriormente são **caminhos simples (simple paths)**, ou seja, passeios nos quais nenhum nó foi visitado repetidamente. 
 Por exemplo, o passeio \<A,B,D,G,D,B,A\> não é considerado caminho pois existem nós repetidos.
@@ -195,11 +194,11 @@ Um grafo é **conectado** se existe um caminho entre todos os nós.
 Se o grafo for direcionado e existe um caminho entre todos os nós, então dizemos que o grafo é **fortemente conectado**.
 Se o grafo for direcionado e não existe um caminho entre todos os nós, então dizemos que o grafo é **fracamente conectado**.
 
-| ![alt text](imgs/grafo-nao-conectado.png) | ![alt text](imgs/grafo-conectado.png)  | 
-| -------- | ---------- | 
+| - | ![alt text](imgs/grafo-nao-conectado.png) | ![alt text](imgs/grafo-conectado.png)  | 
+| -------- | -------- | ---------- | 
 
-![alt text](imgs/grafo-fracamente-conectado.png) | ![alt text](imgs/grafo-fortemente-conectado.png)|
-| -------- | ---------- | 
+| ![alt text](imgs/grafo-nao-conectado.png) | ![alt text](imgs/grafo-fracamente-conectado.png) | ![alt text](imgs/grafo-fortemente-conectado.png)|
+| -------- | ---------- | ---------- |
 
 Conectividade em um grafo é uma propriedade muito importante, visto que permitirá através de caminhos partir de qualquer nó como origem e chegar em qualquer nó como destino. 
 
@@ -217,3 +216,166 @@ Por exemplo: uma árvore na qual as arestas não possuem direção é um grafo a
 
 Ciclos em grafos podem causar alguns problemas, no sentido de dificultar encontrar o menor caminho entre 2 nós, por exemplo.
 Falaremos mais sobre ciclos e como resolver esse problema nas próximas aulas.
+
+## Representações de Grafos: Lista de Vértices e Lista de Arestas 
+
+Grafos são representados pela sequência **G=(V,E)**, um conjunto de vértices e um conjunto de arestas.
+Logo, a forma de representação mais simples que podemos pensar são duas listas: uma para armazenar os nós, e outra para armazenar as arestas.
+
+Como forma de exercício, preenchar as duas listas, V e E, de modo que representem o grafo a seguir:
+
+![alt text](imgs/grafo-representacao-listas.png)
+
+Para representar uma aresta, podemos criar um struct ou classe em CPP.
+Para este exemplo, usei um struct que possui dois campos do tipo char \*, um para representar o nó origem, e outro para representar o nó destino. 
+Mas note que pelo fato do grafo ser não-direcionado, então não faz diferença o nó ser origem ou destino.
+COm relação as listas, elas poderiam ser instanciadas com **vector** ou **array**.
+
+![alt text](imgs/grafo-representacao-listas-preenchido.png)
+
+E se o grafo fosse ponderado?
+Neste caso, bastaria adicionar ao struct Aresta um campo int que representaria o peso.
+
+![alt text](imgs/grafo-representacao-listas-preenchido-ponderado.png)
+
+Agora vamos refletir sobre o custo dessa implementação.
+Quando pensamos em custo, basicamente podemos ter um **custo de tempo** de processamento das operações e **custo de espaço** para armazenamento da estrutura de dados. 
+Em outras palavras, queremos analisar a complexidade de tempo e complexidade de espaço relacionados à implementação proposta.
+
+**Do ponto de vista da complexidade de espaço, o que podemos afirmar?**
+
+Sobre a lista de vértices, a complexidade de espaço será **O(|V|)**. Como cada linha contém uma string, não podemos presumir o tamanho em bytes, visto que strings podem possuir diferentes tamanhos, baseado na quantidade de caracteres. No entanto, não é de se esperar que os rótulos dos nós possuam uma quantidade muito grande de caracteres (e.g., grafos que representam distância entre cidades).
+
+![alt text](imgs/grafo-ex-geo-representacao-listas.png)
+
+Sobre a lista de arestas, cada linha irá armazenar 2 strings e 1 inteiro. Mais uma vez podemos assumir que essas strings terão curto comprimento, possuindo poucos caracteres. No entanto, uma opção melhor seria substituir as strings por ponteiros que irão armazenar o endereço de memória para a string contendo o rótulo do nó. Uma alternativa semelhante seria armazenar o índice daquele nó na lista de vértices. 
+
+![alt text](imgs/grafo-ex-geo-representacao-listas-ponteiros.png)
+
+Uma outra alternativa seria armazenar na lista de arestas o índice dos nós na lista de nós.
+
+![alt text](imgs/grafo-ex-geo-representacao-listas-indices.png)
+
+Qualquer uma das abordagens, usando ponteiros ou índices, fará com que a quantidade de memória usada seja a mesma.
+Neste caso, cada linha da lista de arestas custaria 12 bytes, ou seja, uma quantidade constante de memória.
+Portanto, a complexidade de espaço para a lista de arestas será proporcional à quantidade de arestas, i.e., **O(|E|)**.
+
+Logo, ao representar um grafo com uma lista de arestas e uma lista de nós, a complexidade de espaço seria **O(|V|+|E|)**.
+
+**Do ponto de vista da complexidade de tempo, o que podemos afirmar?**
+
+Primeiro precisamos definir a operação estamos buscando entender a complexidade de tempo.
+**Operação 1: encontrar todos os nós diretamente conectados com um nó específico.**
+Olhe para a ilustração e tente entender o algoritmo.
+
+Para encontrar todos os nós diretamente conectados com um nó específico, precisaríamos varrer toda a lista.
+Isto nos daria uma complexidade **O(|E|)**.
+
+**Operação 2: descobrir se 2 nós estão conectados ou não.**
+
+Para descobrir se 2 nós estão conectados ou não, também precisaríamos varrer toda a lista.
+Isto também nos daria uma complexidade **O(|E|)**.
+
+Agora vamos tentar aprofundar quão bom ou ruim pode ser **O(|E|)**.
+Lembrando o que foi discutido anteriormente (assuma |V|=n):
+- **0 <= |E| <= n\*(n-1)**, se o grafo for direcionado e simples;
+- **0 <= |E| <= n\*(n-1)/2**, se o grafo for não-direcionado e simples.
+
+Então, uma outra forma de expressar **O(|E|)** seria em termos da quantidade de nós (assuma |V|=n):
+- O(n\*(n-1)) ⇾ O(n²-n) ⇾ **O(n²)**, se o grafo for direcionado e simples;
+- O(n\*(n-1)/2) ⇾ O(n²/2-n/2) ⇾ **O(n²)**, se o grafo for não-direcionado e simples.
+
+Só pra constar, sabemos que **O(n²)** é considerado ruim.
+Portanto, devemos buscar outra forma de armazenar um grafo que melhor a complexidade de tempo das operações sobre os grafos.
+
+## Representações de Grafos: Matriz de Adjacências 
+
+Uma outra forma de representar arestas de um grafo é utilizando uma matriz de adjacências em vez de uma lista de arestas.
+Nessa matriz de adjacência, podemos preencher cada posição com true ou false (ou 0 ou 1) de acordo com a existência ou não de uma aresta ligando cada par de nós.
+
+- E[i][j]:
+    - 1, se houver uma aresta entre os nós que estão no índice i e j do array de nós
+    - 0, caso contrário.
+
+[Link para exercício no google draw.](https://docs.google.com/drawings/d/1mEqR4803liK-P_lqANRs7VJvkbDRk9mB4_xD9ZD1-kM/edit?usp=sharing)
+
+![alt text](imgs/grafo-representacao-matriz.png)
+
+A matriz de adjacências que representa essa lista de arestas é ilustrada a seguir.
+
+![alt text](imgs/grafo-representacao-matriz-preenchido.png)
+
+Se o grafo for ponderado, basta substituir os valores 1/true pelo peso das arestas, e os valores 0/false por ∞, ou um valor que se sabe que não será utilizado. 
+Note que podem existir grafos que possuam arestas com peso 0. 
+De modo geral, ∞ tende a ser melhor pois simplifica o algoritmo.
+<!--https://www.reddit.com/r/learnprogramming/comments/5mq8o4/for_weighted_graph_represented_as_adjacency/-->
+
+![alt text](imgs/grafo-ponderado-representacao-matriz-preenchido.png)
+
+Um ponto interessante: para grafos não direcionados, a matriz de adjacências que representa a aresta é simétrica.
+Em outras palavras, E[i][j] = E[j][i].
+Portanto, nesse caso, poderíamos economizar metade deste espaço, bastando apenas utilizar um lado da matriz.
+Isto poderia ser feito alocando a quantidade de valores necessários para cada linha, em vez de alocar um matriz quadrada de forma simplificada.
+
+Por outro lado, quando se trata de grafos direcionados, a matriz de adjacências que representa a aresta não é simétrica. 
+
+![alt text](imgs/grafo-direcionado-ponderado-representacao-matriz-preenchido.png)
+
+Com relação à **complexidade de espaço**, um grafo direcionado com |V| vértices terá uma matriz de adjacências com |V|² espaços.
+Logo, temos: O(|V|²).
+Se o grafo for não direcionado, então teríamos uma PA representando a quantidade de espaços na matriz: 1, 2, 3, 4, ..., |V|-1, |V|.
+Já sabemos que quando temos uma sequência deste tipo, a complexidade é quadrática, portanto, O(|V|²).
+
+Com relação à **complexidade de tempo**, precisamos analisar as operações individualmente.
+
+**Operação 1: encontrar todos os nós diretamente conectados com um nó específico.**
+
+Primeiramente, precisamos descobrir o índice referente àquele nó na lista de nós, o que custa O(|V|). (Às vezes esse custo pode ser evitado se soubermos o índice que representa um nó.)
+Em seguida, sabendo o índice da matriz que representa o nó, basta percorrer a linha encontrada e listar os índices dos nós que formam aresta com aquele nó específico.
+Uma varredura numa linha/coluna de uma matriz leva O(|V|).
+Portanto, a complexidade de tempo é O(|V|+|V|), ou seja, **O(|V|)**.
+
+Quando usamos a lista de arestas como ED, para encontrar todos os nós diretamente conectados com um nó específico, precisaríamos varrer toda a lista de arestas.
+Isto nos daria uma complexidade O(|E|).
+
+Note que a matriz de adjacências, portanto, quando comparada à representação que usa lista de arestas, apresenta uma melhor complexidade de tempo para a operação *encontrar todos os nós diretamente conectados com um nó específico*.
+ - **Lista de arestas: O(|E|), e portanto O(|V|²)**
+ - **Matriz de Adjacências: O(|V|)**
+
+**Operação 2: descobrir se 2 nós estão conectados ou não.**
+
+Para descobrir se 2 nós estão conectados ou não, considerando que estes nós estejam nas posições i e j da lista de nós, basta verificar o valor em **E[i][j]** ou o valor em **E[j][i]**, dependendo do tipo de grafo.
+A primeira parte, custa O(|V|), pois seria preciso varrer a lista de nós para descobrir os índices i e j.
+Se alguma técnica, como hashing, for aplicar, esses valores poderiam ser descoberto em O(1).
+A segunda parte custa O(1), pois consultar uma posição específica de um array bidimensional é instantâneo.
+
+Note que a matriz de adjacências, portanto, quando comparada à representação que usa lista de arestas, apresenta uma melhor complexidade de tempo para a operação *descobrir se 2 nós estão conectados ou não*.
+ - **Lista de arestas: O(|E|), e portanto O(|V|²)**
+ - **Matriz de Adjacências: O(1)**
+
+**Discussão**
+
+Matrizes de adjacência são ótimas para custo das operações, mas péssimas com relação ao uso de memória.
+Sempre irão usar |V|² espaços de memória para representar as arestas, independentemente do grafo ser esparso ou denso.
+Já listas de arestas podem usar pouca memória caso o grafo seja esparso.
+Isso nos leva a concluir que:
+ - podem ser boas para grafos com poucos vértices;
+ - podem ser boas para grafos densos, de modo que pouco espaço ficasse ocioso na memória.
+
+ Porém, o fato é que a maioria dos grafos de problemas reais possuem uma quantidade absurdamente grande de nós, o que tornaria o uso da matriz de adjacências inviável.
+ Além disto, os grafos de problemas reais raramente são densos.
+ Imagine: 
+  - o grafo que representa o relacionamento entre pessoas em redes sociais como Instagram e Facebook
+      - 10^9 pessoas
+      - (10^9)^2 = 10^18 conexões (se cada pessoa fosse amigo de todo mundo)
+      - se cada pessoa tiver 10^3 amigos, então teríamos |E| = (10^9 \* 10^3)/2 = (10^12)/2 = 5 \* 10^11
+      - 5 \* 10^11 << 10^18
+      - 10^18 bytes = 1000 PB
+      - 5 \* 10^11 bytes = 500 GB
+  - o grafo que representa as referências entre páginas de Internet via hiperlink.
+  - o grafo que o Google Maps usa para representar a distância entre cidades.
+
+Todos esses grafos possuem uma infinidade de nós, e além disso, tipicamente são grafos esparsos.
+São grafos nos quais cada nó se relaciona com uma fração muito pequena do total de nós existentes.
+
+**No entanto, existe uma outra representação que provê complexidade de tempo para operações bastante similares (as vezes até melhor), mas que não requer esta alocação exagerada de memória: Lista de Adjacências.**
