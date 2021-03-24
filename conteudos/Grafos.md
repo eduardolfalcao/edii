@@ -379,3 +379,32 @@ Todos esses grafos possuem uma infinidade de nós, e além disso, tipicamente s�
 São grafos nos quais cada nó se relaciona com uma fração muito pequena do total de nós existentes.
 
 **No entanto, existe uma outra representação que provê complexidade de tempo para operações bastante similares (as vezes até melhor), mas que não requer esta alocação exagerada de memória: Lista de Adjacências.**
+
+## Representações de Grafos: Lista de Adjacências 
+
+Matrizes de adjacências proporcionam um excelente desempenho para processamento de operações.
+No entanto, o principal problema é o consumo exagerado de memória.
+
+![alt text](imgs/grafo-representacao-matriz-preenchido-analise.png)
+
+Podemos analisar a matriz estudando cada linha de forma individual.
+A primeira linha, ou seja, linha referente ao índice 0, representa a existência ou não de aresta entre o nó v[0] e todos os outros nós do grafo.
+Obviamente, e[0][0]=0 pois este grafo é simples e não possui laços.
+Em seguida, podemos perceber que e[0][1]=1, indicando que existe aresta entre v[0] e v[1], ou seja, nós **v1** e **v2**.
+Similarmente, e[0][2]=1 indica que existe aresta entre v[0] e v[2], ou seja, nós **v1** e **v3**.
+Os demais, e[0][3]=0, e[0][4]=0, ..., e[0][8]=0, apenas indicam a não-existência de arestas entre esses nós.
+E é justamente este aspecto, a representação explícita da inexistência de arestas, que torna a matriz de adjacências muito custosa em termos de memória.
+Uma abordagem mais simples seria representar simplesmente a existência de arestas entre os nós, e qualquer outra aresta não explicitada seria considerada inexistente.
+
+Voltemos ao exemplo de relações de amizade numa rede social.
+Considerando que a rede possua 10^9 pessoas, **cada linha da matriz de adjacências possuiria 10^9 espaços**.
+Considerando também que em média, cada pessoa possui cerca de 10^3 amigos, então nós teríamos 10^9 - 10^3 = 999999000 espaços ociosos na matriz.
+Ou seja, se o grafo for ponderado, onde utilizaremos um byte por espaço de memória alocado, então apenas 1KB seria utilizado, e ~1GB estaria ocioso (considerando a representação de relações de amizar entre apenas 1 pessoa e o resto da rede).
+
+Uma forma de economizar espaço é simplesmente manter uma lista dos nós destino aos quais um nó origem está conectado.
+Em vez de **e[0] = {0,1,1,0,0,0,0,0,0}**, poderíamos ter **e[0]={1,2}** ou **e[0]={v2,v3}**.
+Isto poderia ser feito, por exemplo, com um ArrayList, LinkedList, com uma árvore (BST), ou até mesmo com uma tabela Hash. 
+
+![alt text](imgs/grafo-representacao-lista-adjacencias-arraylist.png)
+
+![alt text](imgs/grafo-representacao-lista-adjacencias-linkedlist.png)
