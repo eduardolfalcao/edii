@@ -1,0 +1,5 @@
+C:\Users\Eduardo\Documents\git\edii\tests\Debug\tests.vcxproj.CopyComplete
+C:\Users\Eduardo\Documents\git\edii\tests\Debug\tests.exe
+C:\Users\Eduardo\Documents\git\edii\tests\Debug\tests.pdb
+C:\Users\Eduardo\Documents\git\edii\tests\Debug\gtest.pdb
+C:\Users\Eduardo\Documents\git\edii\tests\Debug\gtest_main.pdb
