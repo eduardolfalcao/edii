@@ -408,3 +408,77 @@ Isto poderia ser feito, por exemplo, com um ArrayList, LinkedList, com uma árvo
 ![alt text](imgs/grafo-representacao-lista-adjacencias-arraylist.png)
 
 ![alt text](imgs/grafo-representacao-lista-adjacencias-linkedlist.png)
+
+## Navegação em Grafos
+
+Uma das aplicações de navegação em grafos é verificar, por exemplo, se existe um caminho entre dois nós.
+Os dois algoritmos mais comuns de navegação são busca em profundidade (ou Depth First Search - DFS) ou busca em largura (Breadth First Search - BFS).
+Ambos alcançam o mesmo objetivo, de percorrer todos os nós do grafo, mas com diferentes estratégias.
+
+### DFS
+
+DFS é estudada primeiro devido a sua simplicidade de implementação.
+Como o nome sugere, a navegação por DFS explora os caminhos focando em profundidade em vez focar inicialmente na expansão de todos os caminhos possíveis (como acontece na BFS).
+
+A ideia do algoritmo é partindo de um nó origem, navegar recursivamente por outros nós, e marcar os nós que já foram visitados (com um vetor, por exemplo).
+
+![alt text](imgs/dfs.png)
+
+Segue algoritmo da DFS:
+
+```c
+void dfs(int origem){
+    if(visitado[origem])
+        return;
+    visitado[origem] = true;
+
+    vector<int> vizinhos = arestas[origem];
+    for(int i = 0; i < vizinhos.size(); i++){
+        dfs(vizinhos.at[i]);
+    }
+}
+```
+
+- Identificar componentes em um grafo não conectado. A ideia é colorir cada componente do grafo, ou em outras palavras, rotular vértices de cada componente com mesmo valor. Para isso, basta aplicar a dfs em todos os nós, impedindo de visitar e colorir nós que já foram visitados anteriormente.
+
+![alt text](imgs/grafo-nao-conectado-dfs.png)
+
+![alt text](imgs/grafo-nao-conectado-dfs-colorido.png)
+
+```c
+//retorna qtdade de componentes
+int colorir(){
+    int componentes = 0;
+    int cor = 0;
+    for(int i = 0; i < vertices.size(); i++){
+        if(!visitado[i]){
+            componentes++;
+            dfs(i);
+            cor++;
+        }
+    }
+    return componentes;
+}
+
+//algumas alterações foram feitas na dfs
+void dfs(int origem, int cor){
+    visitado[origem] = true;
+    componentes[origem] = cor;
+
+    vector<int> vizinhos = arestas[origem];
+    for(int i = 0; i < vizinhos.size(); i++){
+        if(!visitado[vizinhos.at[i]])
+            dfs(vizinhos.at[i]);
+    }
+}
+```
+
+### BFS
+
+BFS é um pouco mais elaborada do que a DFS
+Como o nome sugere, a navegação por BFS explora os caminhos focando em larguram em vez focar inicialmente na expansão profunda de cada caminho (como acontece na DFS).
+Além de explorar todos os caminhos possíveis, a peculiaridade de explorar em amplitude naturalmente nos dá o menor caminho entre dois vértices de um grafo não-ponderado.
+
+A ideia do algoritmo é partindo de um nó origem, navegar explorando primeiramente os nós vizinhos, de forma a explorar todos os caminhos possíveis antes de se aprofundar em um caminho. Todos os nós visitados devem ser marcados como visitados.
+
+![alt text](imgs/bfs.png)
