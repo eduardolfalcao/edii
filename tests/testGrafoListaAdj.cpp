@@ -195,6 +195,8 @@ TEST_F(GrafoListaAdjTest, haCaminho) {
 	EXPECT_TRUE(grafo->haCaminho("v1","v2"));
 	EXPECT_TRUE(grafo->haCaminho("v1","v9"));
 
+	//note que o nó 7 não está conectado, como mostrado no grafo da url acima!
+	//logo, não existe caminhos chegando ou partindo de v7
 	EXPECT_FALSE(grafo->haCaminho("v1","v7"));
 	EXPECT_FALSE(grafo->haCaminho("v7","v5"));
 }
@@ -216,8 +218,8 @@ TEST_F(GrafoListaAdjTest, colorirGrafo1Comp) {
 	grafo->inserirArestaNaoDirecionada("v8", "v9");
 
 	EXPECT_EQ(grafo->colorir(), 1);
-	for(int i = 0; i <= 8; i++){
-		EXPECT_EQ(grafo->getVertices().at(i), "cor1");
+	for(int i = 1; i <= 8; i++){
+		EXPECT_EQ(grafo->getVertices().at(i-1), grafo->getVertices().at(i));
 	}
 	
 }
@@ -256,28 +258,31 @@ TEST_F(GrafoListaAdjTest, colorirGrafo5Comp) {
 
 	EXPECT_EQ(grafo->colorir(), 5);
 
-	EXPECT_EQ(grafo->getVertices().at(0), "cor1");
-	EXPECT_EQ(grafo->getVertices().at(4), "cor1");
-	EXPECT_EQ(grafo->getVertices().at(8), "cor1");
-	EXPECT_EQ(grafo->getVertices().at(13), "cor1");
-	EXPECT_EQ(grafo->getVertices().at(14), "cor1");
+	string corComp1 = grafo->getVertices().at(0);
+	EXPECT_EQ(grafo->getVertices().at(4), corComp1);
+	EXPECT_EQ(grafo->getVertices().at(8), corComp1);
+	EXPECT_EQ(grafo->getVertices().at(13), corComp1);
+	EXPECT_EQ(grafo->getVertices().at(14), corComp1);
 
-	EXPECT_EQ(grafo->getVertices().at(1), "cor2");
-	EXPECT_EQ(grafo->getVertices().at(5), "cor2");
-	EXPECT_EQ(grafo->getVertices().at(16), "cor2");
-	EXPECT_EQ(grafo->getVertices().at(17), "cor2");
+	string corComp2 = grafo->getVertices().at(1);
+	EXPECT_EQ(grafo->getVertices().at(5), corComp2);
+	EXPECT_EQ(grafo->getVertices().at(16), corComp2);
+	EXPECT_EQ(grafo->getVertices().at(17), corComp2);
 
-	EXPECT_EQ(grafo->getVertices().at(3), "cor3");
-	EXPECT_EQ(grafo->getVertices().at(9), "cor3");
-	EXPECT_EQ(grafo->getVertices().at(15), "cor3");
-	EXPECT_EQ(grafo->getVertices().at(2), "cor3");
-	EXPECT_EQ(grafo->getVertices().at(10), "cor3");
+	string corComp3 = grafo->getVertices().at(3);
+	EXPECT_EQ(grafo->getVertices().at(9), corComp3);
+	EXPECT_EQ(grafo->getVertices().at(15), corComp3);
+	EXPECT_EQ(grafo->getVertices().at(2), corComp3);
+	EXPECT_EQ(grafo->getVertices().at(10), corComp3);
 
-	EXPECT_EQ(grafo->getVertices().at(6), "cor4");
-	EXPECT_EQ(grafo->getVertices().at(7), "cor4");
-	EXPECT_EQ(grafo->getVertices().at(11), "cor4");
+	string corComp4 = grafo->getVertices().at(6);
+	EXPECT_EQ(grafo->getVertices().at(7), corComp4);
+	EXPECT_EQ(grafo->getVertices().at(11), corComp4);
 
-	EXPECT_EQ(grafo->getVertices().at(12), "cor5");
+	EXPECT_NE(grafo->getVertices().at(12), corComp1);
+	EXPECT_NE(grafo->getVertices().at(12), corComp2);
+	EXPECT_NE(grafo->getVertices().at(12), corComp3);
+	EXPECT_NE(grafo->getVertices().at(12), corComp4);
 }
 
 TEST_F(GrafoListaAdjTest, bfsGrafo1CompNaoPonderado) {

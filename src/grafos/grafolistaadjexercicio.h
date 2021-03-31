@@ -67,7 +67,7 @@ public:
 
     /**
     * Verifica se vértice rotuloVOrigem e vértice rotuloVDestino são
-    * conectados.
+    * conectados (vizinhos).
     **/
     bool saoConectados(string rotuloVOrigem, string rotuloVDestino) {
         //IMPLEMENTAR
@@ -84,9 +84,9 @@ public:
 
     /**
     * Muda os rótulos do vértices dos diferentes componentes para
-    * cor1, cor2, etc.
-    * Procura componentes partindo do vértice v0 ou v1, em ordem
-    * crescente. As cores também são atribuídas nessa mesma ordem.
+    * nomes que representam cores.
+    * Dica: procura componentes partindo do vértice v0 ou v1, em ordem
+    * crescente (mas você pode usar outra ordem se desejar). 
     * Retorna a quantidade de componentes.
     * A melhor forma de fazer isto é reusando a função dfs.
     **/
