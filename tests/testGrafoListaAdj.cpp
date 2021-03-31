@@ -178,6 +178,9 @@ TEST_F(GrafoListaAdjTest, SaoConectadosGrafoDirecionado) {
 
 TEST_F(GrafoListaAdjTest, haCaminho) {
 	inserirVertices(grafo,1,9);
+
+	//grafo usado: https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-rotulado.png
+	
 	grafo->inserirArestaNaoDirecionada("v1", "v2");
 	grafo->inserirArestaNaoDirecionada("v1", "v3");
 	grafo->inserirArestaNaoDirecionada("v2", "v4");
@@ -198,6 +201,9 @@ TEST_F(GrafoListaAdjTest, haCaminho) {
 
 TEST_F(GrafoListaAdjTest, colorirGrafo1Comp) {
 	inserirVertices(grafo,1,9);
+	
+	//grafo usado: https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-rotulado.png
+
 	grafo->inserirArestaNaoDirecionada("v1", "v2");
 	grafo->inserirArestaNaoDirecionada("v1", "v3");
 	grafo->inserirArestaNaoDirecionada("v2", "v4");
@@ -276,6 +282,9 @@ TEST_F(GrafoListaAdjTest, colorirGrafo5Comp) {
 
 TEST_F(GrafoListaAdjTest, bfsGrafo1CompNaoPonderado) {
 	inserirVertices(grafo, 1, 9);
+
+	//grafo usado: https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-rotulado.png
+
 	grafo->inserirArestaNaoDirecionada("v1", "v2");
 	grafo->inserirArestaNaoDirecionada("v1", "v3");
 	grafo->inserirArestaNaoDirecionada("v2", "v4");
