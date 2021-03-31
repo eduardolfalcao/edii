@@ -446,30 +446,18 @@ void dfs(int origem){
 ![alt text](imgs/grafo-nao-conectado-dfs-colorido.png)
 
 ```c
-//retorna qtdade de componentes
+//retorna qtdade de componentes (ou cores usadas)
 int colorir(){
-    int componentes = 0;
-    int cor = 0;
+    int cor = 1;
     for(int i = 0; i < vertices.size(); i++){
         if(!visitado[i]){
-            componentes++;
-            dfs(i);
+            dfs(i); //dfs irá alterar a variável global visitado
+            //neste ponto podemos descobrir quais vértices
+            //foram visitados e mudar o valor de seus rótulos
             cor++;
         }
     }
-    return componentes;
-}
-
-//algumas alterações foram feitas na dfs
-void dfs(int origem, int cor){
-    visitado[origem] = true;
-    componentes[origem] = cor;
-
-    vector<int> vizinhos = arestas[origem];
-    for(int i = 0; i < vizinhos.size(); i++){
-        if(!visitado[vizinhos.at[i]])
-            dfs(vizinhos.at[i]);
-    }
+    return cor;
 }
 ```
 
@@ -482,3 +470,28 @@ Além de explorar todos os caminhos possíveis, a peculiaridade de explorar em a
 A ideia do algoritmo é partindo de um nó origem, navegar explorando primeiramente os nós vizinhos, de forma a explorar todos os caminhos possíveis antes de se aprofundar em um caminho. Todos os nós visitados devem ser marcados como visitados.
 
 ![alt text](imgs/bfs.png)
+
+Para a BFS, a melhor forma de controlar quais são os próximos nós a serem visitados é usando uma fila.
+Segue ilustração da BFS detalhando o uso da fila.
+
+![alt text](imgs/bfs-detalhado.png)
+
+```c
+int* bfs(int indexVOrigem) {
+    visited[indexVOrigem] = true;
+    distance[indexVOrigem] = 0;
+    q.push(indexVOrigem);
+    while (!q.empty()) {
+        int s = q.front(); q.pop();
+        // process node s
+        for (auto u : adj[s]) {
+            if (!visited[u]){
+                visited[u] = true;
+                distance[u] = distance[s]+1;
+                q.push(u);
+            }
+        }
+    }
+    return distance;
+}
+```
