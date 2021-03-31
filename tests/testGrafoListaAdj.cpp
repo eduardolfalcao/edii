@@ -190,8 +190,10 @@ TEST_F(GrafoListaAdjTest, haCaminho) {
 	grafo->inserirArestaNaoDirecionada("v5", "v9");
 	grafo->inserirArestaNaoDirecionada("v6", "v8");
 	grafo->inserirArestaNaoDirecionada("v8", "v9");
+	grafo->inserirArestaNaoDirecionada("v9", "v9");
 
-	EXPECT_TRUE(grafo->haCaminho("v1","v1"));
+	EXPECT_FALSE(grafo->haCaminho("v1","v1"));
+	EXPECT_TRUE(grafo->haCaminho("v9", "v9"));
 	EXPECT_TRUE(grafo->haCaminho("v1","v2"));
 	EXPECT_TRUE(grafo->haCaminho("v1","v9"));
 
