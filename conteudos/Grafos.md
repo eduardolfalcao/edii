@@ -495,3 +495,77 @@ int* bfs(int indexVOrigem) {
     return distance;
 }
 ```
+
+## Menor Caminho em Grafos Ponderados
+
+### Bellman-Ford
+
+The Bellman–Ford algorithm finds shortest paths from a starting node to all nodes
+of the graph. The algorithm can process all kinds of graphs, provided that the graph
+does not contain a cycle with negative length. If the graph contains a negative cycle,
+the algorithm can detect this.
+
+The algorithm keeps track of distances from the starting node to all nodes of the
+graph. Initially, the distance to the starting node is 0 and the distance to any other node
+in infinite. The algorithm then reduces the distances by finding edges that shorten
+the paths until it is not possible to reduce any distance.
+
+
+Algoritmo (extraído do livro "Guide to Competitive Programming", de Antti Laaksonen):
+
+```c
+for (int i = 1; i <= n; i++) {
+    distance[i] = INF;
+}
+distance[x] = 0;
+for (int i = 1; i <= n-1; i++) {
+    for (auto e : edges) {
+        int a, b, w;
+        tie(a, b, w) = e;
+        distance[b] = min(distance[b], distance[a]+w);
+    }
+}
+for (auto e : edges) {
+    int a, b, w;
+    tie(a, b, w) = e;
+    if(distance[a] + w < distance[b])
+        distance[b] = -INF;
+}
+```
+
+### Dijkstra
+
+O algoritmo de Dijkstra encontra o menor caminho partindo de um vértice origem até os demais vértices, assim como o algoritmo de Bellman–Ford.
+Dijkstra tem uma restrição e uma vantagem.
+A restrição é que não funciona para grafos com pesos negativos (o que inclui grafos com ciclos negativos).
+A vantagem do Dijkstra está em sua performance. Disjktra tem complexidade de tempo O(E+V), enquanto Bellman-Ford possui complexidade de tempo O(E\*V).
+
+Assim como em Bellman-Ford, o algoritmo de Dijkstra mantém distâncias para os vértices e as reduz durante a pesquisa. 
+Em cada etapa, o algoritmo de Dijkstra seleciona um vértice que ainda não foi visitado e cuja distância é a menor possível. 
+Então, o algoritmo passa por todas as arestas que começam no vértice e reduz as distâncias. 
+O algoritmo de Dijkstra é eficiente, porque ele só processa cada aresta no grafo uma vez, usando o fato de que não há arestas negativas.
+
+![alt text](imgs/dijkstra.png)
+
+Algoritmo (extraído do livro "Guide to Competitive Programming", de Antti Laaksonen):
+
+```c
+priority_queue<pair<int,int>> q;
+for (int i = 1; i <= n; i++) {
+    distance[i] = INF;
+}
+distance[x] = 0;
+q.push({0,x});
+while (!q.empty()) {
+    int a = q.top().second; q.pop();
+    if (processed[a]) continue;
+    processed[a] = true;
+    for (auto u : adj[a]) {
+        int b = u.first, w = u.second;
+        if (distance[a]+w < distance[b]) {
+            distance[b] = distance[a]+w;
+            q.push({-distance[b],b});
+        }
+    }
+}
+```
