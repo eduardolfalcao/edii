@@ -3,6 +3,9 @@
 #include <queue>
 using namespace std;
 
+#define POS_INF 1000000000
+#define NEG_INF -1000000000
+
 class GrafoListaAdj {
 private:
     vector<string> vertices;
@@ -105,6 +108,39 @@ public:
     * É necessário utilizar a ED fila.
     **/
     int* bfs(string rotuloVOrigem) {
+        //IMPLEMENTAR
+    }
+
+    /**
+    * Usamos o BellmanFord para encontrar menor caminho
+    * em grafos com arestas com pesos negativos.
+    * O BellmanFord consegue detectar ciclos negativos
+    * e atribuir o valor NEG_INF (constante definida nesse arquivo)
+    * aos vértices que pertençam ao ciclo.
+    * POS_INF deve ser atribuído aos vértices inalcançáveis.
+    * O aspecto negativo é sua complexidade de tempo: O(V*E).
+    * Isto acontece pois, como possui arestas negativas, cada vértice 
+    * do grafo precisa ser processado V vezes.   
+    * Pseudo-código: https://github.com/eduardolfalcao/edii/blob/master/conteudos/Grafos.md#bellman-ford
+    **/
+    int* bellmanFord(string rotuloVOrigem) {
+        //IMPLEMENTAR
+    }
+
+    /**
+    * Usamos o Dijkstra para encontrar menor caminho
+    * em grafos sem arestas com pesos negativos.
+    * O Dijkstra retorna respostas incorretas caso o grafo
+    * possua arestas negativas, e portanto não consegue
+    * detectar ciclos negativos. Este é o aspecto negativo.
+    * POS_INF deve ser atribuído aos vértices inalcançáveis.
+    * O aspecto positivo é sua complexidade de tempo: O(V+E).
+    * Isto acontece pois, como o grafo não possui arestas negativas, 
+    * cada vértice do grafo precisa ser processado apenas 1 vez.
+    * Pseudo-código: https://github.com/eduardolfalcao/edii/blob/master/conteudos/Grafos.md#dijkstra
+    * Ilustração: https://docs.google.com/drawings/d/1NmkJPHpcg8uVcDZ24FQiYs3uHR5n-rdm1AZwD74WiMY/edit?usp=sharing
+    **/
+    int* dijkstra(string rotuloVOrigem) {
         //IMPLEMENTAR
     }
 

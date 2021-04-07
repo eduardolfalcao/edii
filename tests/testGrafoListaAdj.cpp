@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "../src/grafos/grafolistaadj.h"
-#include <climits>
 using namespace std;
-
-#define POS_INF 1000000000
-#define NEG_INF -1000000000
 
 class GrafoListaAdjTest : public ::testing::Test {
 protected:
@@ -41,13 +37,13 @@ TEST_F(GrafoListaAdjTest, InsercaoVerticeRepetido) {
 	EXPECT_EQ(grafo->getArestas().size(), 1);
 }
 
-void inserirVertices(GrafoListaAdj* grafoNaoPonderado, int ini, int fim) {
+void inserirVertices(GrafoListaAdj* grafo, int ini, int fim) {
 	for (int i = ini; i <= fim; i++) {
 		string rotulo;
 		std::stringstream sstm;
 		sstm << "v" << i;
 		rotulo = sstm.str();
-		grafoNaoPonderado->inserirVertice(rotulo);
+		grafo->inserirVertice(rotulo);
 	}
 }
 
@@ -180,37 +176,9 @@ TEST_F(GrafoListaAdjTest, SaoConectadosGrafoDirecionado) {
 	EXPECT_FALSE(grafo->saoConectados("v4", "v3"));
 }
 
-TEST_F(GrafoListaAdjTest, haCaminho) {
-	inserirVertices(grafo,1,9);
-
-	//grafo usado: https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-rotulado.png
-	
-	grafo->inserirArestaNaoDirecionada("v1", "v2");
-	grafo->inserirArestaNaoDirecionada("v1", "v3");
-	grafo->inserirArestaNaoDirecionada("v2", "v4");
-	grafo->inserirArestaNaoDirecionada("v3", "v4");
-	grafo->inserirArestaNaoDirecionada("v3", "v5");
-	grafo->inserirArestaNaoDirecionada("v4", "v6");
-	grafo->inserirArestaNaoDirecionada("v5", "v9");
-	grafo->inserirArestaNaoDirecionada("v6", "v8");
-	grafo->inserirArestaNaoDirecionada("v8", "v9");
-	grafo->inserirArestaNaoDirecionada("v9", "v9");
-
-	EXPECT_FALSE(grafo->haCaminho("v1","v1"));
-	EXPECT_TRUE(grafo->haCaminho("v9", "v9"));
-	EXPECT_TRUE(grafo->haCaminho("v1","v2"));
-	EXPECT_TRUE(grafo->haCaminho("v1","v9"));
-
-	//note que o nó 7 não está conectado, como mostrado no grafo da url acima!
-	//logo, não existe caminhos chegando ou partindo de v7
-	EXPECT_FALSE(grafo->haCaminho("v1","v7"));
-	EXPECT_FALSE(grafo->haCaminho("v7","v5"));
-}
-
-TEST_F(GrafoListaAdjTest, colorirGrafo1Comp) {
-	inserirVertices(grafo,1,9);
-	
-	//grafo usado: https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-rotulado.png
+void construirGrafoNaoPonderado(GrafoListaAdj* grafo) {
+	//este é o grafo não ponderado usado
+	//https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-rotulado.png
 
 	grafo->inserirArestaNaoDirecionada("v1", "v2");
 	grafo->inserirArestaNaoDirecionada("v1", "v3");
@@ -222,17 +190,36 @@ TEST_F(GrafoListaAdjTest, colorirGrafo1Comp) {
 	grafo->inserirArestaNaoDirecionada("v5", "v9");
 	grafo->inserirArestaNaoDirecionada("v6", "v8");
 	grafo->inserirArestaNaoDirecionada("v8", "v9");
-
-	EXPECT_EQ(grafo->colorir(), 1);
-	for(int i = 1; i <= 8; i++){
-		EXPECT_EQ(grafo->getVertices().at(i-1), grafo->getVertices().at(i));
-	}
-	
+	grafo->inserirArestaNaoDirecionada("v9", "v9");
 }
 
-TEST_F(GrafoListaAdjTest, colorirGrafo5Comp) {
-	inserirVertices(grafo, 0, 17);
+TEST_F(GrafoListaAdjTest, haCaminho) {
+	//1 a 10, pra v10 ficar desconectado do componente
+	inserirVertices(grafo,1,10);	
+	construirGrafoNaoPonderado(grafo);	
 
+	EXPECT_FALSE(grafo->haCaminho("v1","v1"));
+	EXPECT_TRUE(grafo->haCaminho("v9", "v9"));
+	EXPECT_TRUE(grafo->haCaminho("v1","v2"));
+	EXPECT_TRUE(grafo->haCaminho("v1","v9"));
+
+	//note que v10 não está conectado
+	//inclusive, não há v10 no grafo da url descrita
+	//logo, não existe caminhos chegando ou partindo de v10
+	EXPECT_FALSE(grafo->haCaminho("v1","v10"));
+	EXPECT_FALSE(grafo->haCaminho("v10","v5"));
+}
+
+TEST_F(GrafoListaAdjTest, colorirGrafo1Comp) {
+	inserirVertices(grafo,1,9);
+	construirGrafoNaoPonderado(grafo);
+	
+	EXPECT_EQ(grafo->colorir(), 1);
+	for(int i = 1; i <= 8; i++)
+		EXPECT_EQ(grafo->getVertices().at(i-1), grafo->getVertices().at(i));
+}
+
+void construirGrafoCom5Componentes(GrafoListaAdj* grafo) {
 	//grafo colorido com 5 componentes exibido aqui
 	//https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-nao-conectado-dfs.png
 	//https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-nao-conectado-dfs-colorido.png
@@ -260,7 +247,12 @@ TEST_F(GrafoListaAdjTest, colorirGrafo5Comp) {
 	grafo->inserirArestaNaoDirecionada("v6", "v11");
 	grafo->inserirArestaNaoDirecionada("v7", "v11");
 
-	//comp5: vértice "v12"
+	//comp5: vértice "v12" (sem arestas)
+}
+
+TEST_F(GrafoListaAdjTest, colorirGrafo5Comp) {
+	inserirVertices(grafo, 0, 17);
+	construirGrafoCom5Componentes(grafo);	
 
 	EXPECT_EQ(grafo->colorir(), 5);
 
@@ -293,19 +285,7 @@ TEST_F(GrafoListaAdjTest, colorirGrafo5Comp) {
 
 TEST_F(GrafoListaAdjTest, bfsGrafo1CompNaoPonderado) {
 	inserirVertices(grafo, 1, 9);
-
-	//grafo usado: https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-rotulado.png
-
-	grafo->inserirArestaNaoDirecionada("v1", "v2");
-	grafo->inserirArestaNaoDirecionada("v1", "v3");
-	grafo->inserirArestaNaoDirecionada("v2", "v4");
-	grafo->inserirArestaNaoDirecionada("v3", "v4");
-	grafo->inserirArestaNaoDirecionada("v3", "v5");
-	grafo->inserirArestaNaoDirecionada("v4", "v6");
-	grafo->inserirArestaNaoDirecionada("v4", "v7");
-	grafo->inserirArestaNaoDirecionada("v5", "v9");
-	grafo->inserirArestaNaoDirecionada("v6", "v8");
-	grafo->inserirArestaNaoDirecionada("v8", "v9");
+	construirGrafoNaoPonderado(grafo);
 
 	int* distancias = grafo->bfs("v1");
 	EXPECT_EQ(distancias[0], 0);
@@ -334,35 +314,7 @@ TEST_F(GrafoListaAdjTest, bfsGrafo1CompNaoPonderado) {
 
 TEST_F(GrafoListaAdjTest, bfsGrafo5CompNaoPonderado) {
 	inserirVertices(grafo, 0, 17);
-
-	//grafo colorido com 5 componentes exibido aqui
-	//https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-nao-conectado-dfs.png
-	//https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-nao-conectado-dfs-colorido.png
-
-	//comp1
-	grafo->inserirArestaNaoDirecionada("v0", "v4");
-	grafo->inserirArestaNaoDirecionada("v0", "v8");
-	grafo->inserirArestaNaoDirecionada("v0", "v13");
-	grafo->inserirArestaNaoDirecionada("v0", "v14");
-
-	//comp2
-	grafo->inserirArestaNaoDirecionada("v1", "v5");
-	grafo->inserirArestaNaoDirecionada("v5", "v16");
-	grafo->inserirArestaNaoDirecionada("v5", "v17");
-
-	//comp3
-	grafo->inserirArestaNaoDirecionada("v3", "v9");
-	grafo->inserirArestaNaoDirecionada("v9", "v2");
-	grafo->inserirArestaNaoDirecionada("v15", "v9");
-	grafo->inserirArestaNaoDirecionada("v15", "v2");
-	grafo->inserirArestaNaoDirecionada("v15", "v10");
-
-	//comp4
-	grafo->inserirArestaNaoDirecionada("v6", "v7");
-	grafo->inserirArestaNaoDirecionada("v6", "v11");
-	grafo->inserirArestaNaoDirecionada("v7", "v11");
-
-	//comp5: vértice "v12"
+	construirGrafoCom5Componentes(grafo);
 
 	int* distancias = grafo->bfs("v0");
 	EXPECT_EQ(distancias[0], 0);
@@ -446,281 +398,5 @@ TEST_F(GrafoListaAdjTest, bfsGrafo5CompNaoPonderado) {
 	EXPECT_EQ(distancias[15], 2);
 	EXPECT_EQ(distancias[16], 0);
 	EXPECT_EQ(distancias[17], 0);
-	free(distancias);
-}
-
-TEST_F(GrafoListaAdjTest, BellmanFordGrafoSemCicloNegativo) {
-	inserirVertices(grafo, 1, 9);
-
-	grafo->inserirArestaNaoDirecionada("v1", "v2", 6);
-	grafo->inserirArestaNaoDirecionada("v1", "v3", 4);
-	grafo->inserirArestaNaoDirecionada("v2", "v4", 5);
-	grafo->inserirArestaNaoDirecionada("v3", "v4", 2);
-	grafo->inserirArestaNaoDirecionada("v3", "v5", 4);
-	grafo->inserirArestaNaoDirecionada("v4", "v6", 5);
-	grafo->inserirArestaNaoDirecionada("v4", "v7", 5);
-	grafo->inserirArestaNaoDirecionada("v5", "v9", 9);
-	grafo->inserirArestaNaoDirecionada("v6", "v8", 6);
-	grafo->inserirArestaNaoDirecionada("v8", "v9", 8);
-
-	int* distancias = grafo->bellmanFord("v1");
-	EXPECT_EQ(distancias[0], 0);
-	EXPECT_EQ(distancias[1], 6);
-	EXPECT_EQ(distancias[2], 4);
-	EXPECT_EQ(distancias[3], 6);
-	EXPECT_EQ(distancias[4], 8);
-	EXPECT_EQ(distancias[5], 11);
-	EXPECT_EQ(distancias[6], 11);
-	EXPECT_EQ(distancias[7], 17);
-	EXPECT_EQ(distancias[8], 17);
-	free(distancias);
-
-	distancias = grafo->bellmanFord("v7");
-	EXPECT_EQ(distancias[0], 11);
-	EXPECT_EQ(distancias[1], 10);
-	EXPECT_EQ(distancias[2], 7);
-	EXPECT_EQ(distancias[3], 5);
-	EXPECT_EQ(distancias[4], 11);
-	EXPECT_EQ(distancias[5], 10);
-	EXPECT_EQ(distancias[6], 0);
-	EXPECT_EQ(distancias[7], 16);
-	EXPECT_EQ(distancias[8], 20);
-	free(distancias);
-
-	distancias = grafo->bellmanFord("v9");
-	EXPECT_EQ(distancias[0], 17);
-	EXPECT_EQ(distancias[1], 20);
-	EXPECT_EQ(distancias[2], 13);
-	EXPECT_EQ(distancias[3], 15);
-	EXPECT_EQ(distancias[4], 9);
-	EXPECT_EQ(distancias[5], 14);
-	EXPECT_EQ(distancias[6], 20);
-	EXPECT_EQ(distancias[7], 8);
-	EXPECT_EQ(distancias[8], 0);
-	free(distancias);
-}
-
-TEST_F(GrafoListaAdjTest, BellmanFordGrafoComLacoNegativo) {
-	inserirVertices(grafo, 1, 9);
-
-	grafo->inserirArestaNaoDirecionada("v1", "v2", 6);
-	grafo->inserirArestaNaoDirecionada("v1", "v3", 4);
-	grafo->inserirArestaNaoDirecionada("v2", "v4", 5);
-	grafo->inserirArestaNaoDirecionada("v3", "v4", 2);
-	grafo->inserirArestaNaoDirecionada("v3", "v5", 4);
-	grafo->inserirArestaNaoDirecionada("v4", "v6", 5);
-	grafo->inserirArestaNaoDirecionada("v4", "v7", 5);
-	grafo->inserirArestaNaoDirecionada("v5", "v9", 9);
-	grafo->inserirArestaNaoDirecionada("v6", "v8", 6);
-	grafo->inserirArestaNaoDirecionada("v8", "v9", 8);
-
-
-	//grafo com aresta (laço) com peso negativo
-	//como o grafo só tem um componente
-	//então todas as distâncias podem ser diminuídas
-	grafo->inserirArestaNaoDirecionada("v1", "v1", -2);
-	int* distancias = grafo->bellmanFord("v1");
-
-	EXPECT_EQ(distancias[0], NEG_INF);
-	EXPECT_EQ(distancias[1], NEG_INF);
-	EXPECT_EQ(distancias[2], NEG_INF);
-	EXPECT_EQ(distancias[3], NEG_INF);
-	EXPECT_EQ(distancias[4], NEG_INF);
-	EXPECT_EQ(distancias[5], NEG_INF);
-	EXPECT_EQ(distancias[6], NEG_INF);
-	EXPECT_EQ(distancias[7], NEG_INF);
-	EXPECT_EQ(distancias[8], NEG_INF);
-	free(distancias);
-
-	distancias = grafo->bellmanFord("v5");
-	EXPECT_EQ(distancias[0], NEG_INF);
-	EXPECT_EQ(distancias[1], NEG_INF);
-	EXPECT_EQ(distancias[2], NEG_INF);
-	EXPECT_EQ(distancias[3], NEG_INF);
-	EXPECT_EQ(distancias[4], NEG_INF);
-	EXPECT_EQ(distancias[5], NEG_INF);
-	EXPECT_EQ(distancias[6], NEG_INF);
-	EXPECT_EQ(distancias[7], NEG_INF);
-	EXPECT_EQ(distancias[8], NEG_INF);
-	free(distancias);
-
-	distancias = grafo->bellmanFord("v9");
-	EXPECT_EQ(distancias[0], NEG_INF);
-	EXPECT_EQ(distancias[1], NEG_INF);
-	EXPECT_EQ(distancias[2], NEG_INF);
-	EXPECT_EQ(distancias[3], NEG_INF);
-	EXPECT_EQ(distancias[4], NEG_INF);
-	EXPECT_EQ(distancias[5], NEG_INF);
-	EXPECT_EQ(distancias[6], NEG_INF);
-	EXPECT_EQ(distancias[7], NEG_INF);
-	EXPECT_EQ(distancias[8], NEG_INF);
-	free(distancias);
-}
-
-TEST_F(GrafoListaAdjTest, BellmanFordGrafoCom2ComponentesECicloNegativo) {
-	inserirVertices(grafo, 1, 9);
-
-	grafo->inserirArestaNaoDirecionada("v1", "v2", 6);
-	grafo->inserirArestaNaoDirecionada("v1", "v3", 4);
-	grafo->inserirArestaNaoDirecionada("v2", "v4", 5);
-	grafo->inserirArestaNaoDirecionada("v3", "v4", 2);
-	grafo->inserirArestaNaoDirecionada("v3", "v5", 4);
-	grafo->inserirArestaNaoDirecionada("v4", "v6", 5);
-	grafo->inserirArestaNaoDirecionada("v4", "v7", 5);
-	grafo->inserirArestaNaoDirecionada("v5", "v9", 9);
-	grafo->inserirArestaNaoDirecionada("v6", "v8", 6);
-	grafo->inserirArestaNaoDirecionada("v8", "v9", 8);
-
-
-	//grafo com aresta (laço) com peso negativo
-	//como o grafo só tem um componente
-	//então todas as distâncias podem ser diminuídas
-	grafo->inserirArestaNaoDirecionada("v1", "v1", -2);
-	
-	//inserindo segundo componente, que nao tem
-	//ciclo negativo
-	inserirVertices(grafo, 10, 12);
-	grafo->inserirArestaNaoDirecionada("v10", "v11", 10);
-	grafo->inserirArestaNaoDirecionada("v10", "v12", 15);
-
-	int* distancias = grafo->bellmanFord("v10");
-	//componente com ciclos negativos
-	EXPECT_EQ(distancias[0], NEG_INF);
-	EXPECT_EQ(distancias[1], NEG_INF);
-	EXPECT_EQ(distancias[2], NEG_INF);
-	EXPECT_EQ(distancias[3], NEG_INF);
-	EXPECT_EQ(distancias[4], NEG_INF);
-	EXPECT_EQ(distancias[5], NEG_INF);
-	EXPECT_EQ(distancias[6], NEG_INF);
-	EXPECT_EQ(distancias[7], NEG_INF);
-	EXPECT_EQ(distancias[8], NEG_INF);
-	//componente sem ciclos negativos
-	EXPECT_EQ(distancias[9], 0);
-	EXPECT_EQ(distancias[10], 10);
-	EXPECT_EQ(distancias[11], 15);
-	//libera array
-	free(distancias);
-
-	distancias = grafo->bellmanFord("v11");
-	//componente com ciclos negativos
-	EXPECT_EQ(distancias[0], NEG_INF);
-	EXPECT_EQ(distancias[1], NEG_INF);
-	EXPECT_EQ(distancias[2], NEG_INF);
-	EXPECT_EQ(distancias[3], NEG_INF);
-	EXPECT_EQ(distancias[4], NEG_INF);
-	EXPECT_EQ(distancias[5], NEG_INF);
-	EXPECT_EQ(distancias[6], NEG_INF);
-	EXPECT_EQ(distancias[7], NEG_INF);
-	EXPECT_EQ(distancias[8], NEG_INF);
-	//componente sem ciclos negativos
-	EXPECT_EQ(distancias[9], 10);
-	EXPECT_EQ(distancias[10], 0);
-	EXPECT_EQ(distancias[11], 25);
-	//libera array
-	free(distancias);
-
-	distancias = grafo->bellmanFord("v12");
-	//componente com ciclos negativos
-	EXPECT_EQ(distancias[0], NEG_INF);
-	EXPECT_EQ(distancias[1], NEG_INF);
-	EXPECT_EQ(distancias[2], NEG_INF);
-	EXPECT_EQ(distancias[3], NEG_INF);
-	EXPECT_EQ(distancias[4], NEG_INF);
-	EXPECT_EQ(distancias[5], NEG_INF);
-	EXPECT_EQ(distancias[6], NEG_INF);
-	EXPECT_EQ(distancias[7], NEG_INF);
-	EXPECT_EQ(distancias[8], NEG_INF);
-	//componente sem ciclos negativos
-	EXPECT_EQ(distancias[9], 15);
-	EXPECT_EQ(distancias[10], 25);
-	EXPECT_EQ(distancias[11], 0);
-	//libera array
-	free(distancias);
-
-	distancias = grafo->bellmanFord("v1");
-	//componente com ciclos negativos
-	EXPECT_EQ(distancias[0], NEG_INF);
-	EXPECT_EQ(distancias[1], NEG_INF);
-	EXPECT_EQ(distancias[2], NEG_INF);
-	EXPECT_EQ(distancias[3], NEG_INF);
-	EXPECT_EQ(distancias[4], NEG_INF);
-	EXPECT_EQ(distancias[5], NEG_INF);
-	EXPECT_EQ(distancias[6], NEG_INF);
-	EXPECT_EQ(distancias[7], NEG_INF);
-	EXPECT_EQ(distancias[8], NEG_INF);
-	//componente sem ciclos negativos
-	EXPECT_EQ(distancias[9], POS_INF);
-	EXPECT_EQ(distancias[10], POS_INF);
-	EXPECT_EQ(distancias[11], POS_INF);
-	//libera array
-	free(distancias);
-
-	distancias = grafo->bellmanFord("v5");
-	//componente com ciclos negativos
-	EXPECT_EQ(distancias[0], NEG_INF);
-	EXPECT_EQ(distancias[1], NEG_INF);
-	EXPECT_EQ(distancias[2], NEG_INF);
-	EXPECT_EQ(distancias[3], NEG_INF);
-	EXPECT_EQ(distancias[4], NEG_INF);
-	EXPECT_EQ(distancias[5], NEG_INF);
-	EXPECT_EQ(distancias[6], NEG_INF);
-	EXPECT_EQ(distancias[7], NEG_INF);
-	EXPECT_EQ(distancias[8], NEG_INF);
-	//componente sem ciclos negativos
-	EXPECT_EQ(distancias[9], POS_INF);
-	EXPECT_EQ(distancias[10], POS_INF);
-	EXPECT_EQ(distancias[11], POS_INF);
-	//libera array
-	free(distancias);
-}
-
-TEST_F(GrafoListaAdjTest, DijkstraGrafoSemCicloNegativo) {
-	inserirVertices(grafo, 1, 9);
-
-	grafo->inserirArestaNaoDirecionada("v1", "v2", 6);
-	grafo->inserirArestaNaoDirecionada("v1", "v3", 4);
-	grafo->inserirArestaNaoDirecionada("v2", "v4", 5);
-	grafo->inserirArestaNaoDirecionada("v3", "v4", 2);
-	grafo->inserirArestaNaoDirecionada("v3", "v5", 4);
-	grafo->inserirArestaNaoDirecionada("v4", "v6", 5);
-	grafo->inserirArestaNaoDirecionada("v4", "v7", 5);
-	grafo->inserirArestaNaoDirecionada("v5", "v9", 9);
-	grafo->inserirArestaNaoDirecionada("v6", "v8", 6);
-	grafo->inserirArestaNaoDirecionada("v8", "v9", 8);
-
-	int* distancias = grafo->dijkstra("v1");
-	EXPECT_EQ(distancias[0], 0);
-	EXPECT_EQ(distancias[1], 6);
-	EXPECT_EQ(distancias[2], 4);
-	EXPECT_EQ(distancias[3], 6);
-	EXPECT_EQ(distancias[4], 8);
-	EXPECT_EQ(distancias[5], 11);
-	EXPECT_EQ(distancias[6], 11);
-	EXPECT_EQ(distancias[7], 17);
-	EXPECT_EQ(distancias[8], 17);
-	free(distancias);
-
-	distancias = grafo->dijkstra("v7");
-	EXPECT_EQ(distancias[0], 11);
-	EXPECT_EQ(distancias[1], 10);
-	EXPECT_EQ(distancias[2], 7);
-	EXPECT_EQ(distancias[3], 5);
-	EXPECT_EQ(distancias[4], 11);
-	EXPECT_EQ(distancias[5], 10);
-	EXPECT_EQ(distancias[6], 0);
-	EXPECT_EQ(distancias[7], 16);
-	EXPECT_EQ(distancias[8], 20);
-	free(distancias);
-
-	distancias = grafo->dijkstra("v9");
-	EXPECT_EQ(distancias[0], 17);
-	EXPECT_EQ(distancias[1], 20);
-	EXPECT_EQ(distancias[2], 13);
-	EXPECT_EQ(distancias[3], 15);
-	EXPECT_EQ(distancias[4], 9);
-	EXPECT_EQ(distancias[5], 14);
-	EXPECT_EQ(distancias[6], 20);
-	EXPECT_EQ(distancias[7], 8);
-	EXPECT_EQ(distancias[8], 0);
 	free(distancias);
 }
