@@ -30,7 +30,7 @@ protected:
 		cout << "load_factor depois: " << estoqueSupermercadoDesordenado.load_factor() << endl;
 	}
 
-	const int QTDADE_POR_ITEM = 100000;
+	const int QTDADE_POR_ITEM = 1000;
 	string itens[5] = { "cebola", "feijao", "tomate", "arroz", "macarrao" };
 
 	//cebola1, 500
@@ -58,7 +58,7 @@ protected:
 	unordered_multimap<string, int> estoqueSupermercadoDesordenadoMulti;
 };
 
-TEST_F(CppMapsTest, HaItemMapDesordenado) {
+/*TEST_F(CppMapsTest, HaItemMapDesordenado) {
 	auto start = high_resolution_clock::now();
 	for (int i = 0; i < 5; i++) {
 		for (int j = 1; j <= QTDADE_POR_ITEM; j++)
@@ -101,7 +101,7 @@ TEST_F(CppMapsTest, InsercaoDeItemExistente) {
 	EXPECT_EQ(itr->second, 123);
 }
 
-TEST_F(CppMapsTest, CalculandoOBucket) {	
+TEST_F(CppMapsTest, CalculandoOBucket) {
 	unsigned nBuckets = estoqueSupermercadoDesordenado.bucket_count();
 	cout << "estoqueSupermercadoDesordenado tem " << nBuckets << " buckets.\n";
 	for (unsigned bucket = 0; bucket < nBuckets; ++bucket) {
@@ -112,7 +112,7 @@ TEST_F(CppMapsTest, CalculandoOBucket) {
 		}
 		cout << endl;
 	}
-}
+}*/
 
 TEST_F(CppMapsTest, VerificandoOrdenacao) {
 

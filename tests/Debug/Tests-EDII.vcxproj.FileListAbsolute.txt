@@ -1,5 +1,0 @@
-C:\Users\Eduardo\Documents\git\Tests-EDII\Debug\Tests-EDII.vcxproj.CopyComplete
-C:\Users\Eduardo\Documents\git\Tests-EDII\Debug\Tests-EDII.exe
-C:\Users\Eduardo\Documents\git\Tests-EDII\Debug\Tests-EDII.pdb
-C:\Users\Eduardo\Documents\git\Tests-EDII\Debug\gtest.pdb
-C:\Users\Eduardo\Documents\git\Tests-EDII\Debug\gtest_main.pdb
