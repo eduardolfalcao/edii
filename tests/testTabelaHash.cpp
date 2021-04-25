@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "../src/tabelas-hash/TabelaHash.h"
 #include <algorithm>
-#include <chrono>
-using namespace std::chrono;
 using namespace std;
 
 class TabelaHashTest : public ::testing::Test {
