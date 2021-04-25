@@ -1,6 +1,6 @@
 #include "pch.h"
-#include <unordered_map>
 #include "../src/tabelas-hash/TabelaHash.h"
+#include <algorithm>
 #include <chrono>
 using namespace std::chrono;
 using namespace std;
@@ -40,7 +40,7 @@ TEST_F(TabelaHashTest, ForcarAumentoDeTabela) {
 	criarTabela(estoqueSupermercadoTabelaHash,qtdadeRepeticoes,itens);
 	for (int i = 0; i < 5; i++) {
 		for (int j = 1; j <= qtdadeRepeticoes; j++) {
-			estoqueSupermercadoTabelaHash.contemChave(itens[i] + to_string(j));
+			EXPECT_TRUE(estoqueSupermercadoTabelaHash.contemChave(itens[i] + to_string(j)));
 		}
 	}
 	EXPECT_EQ(estoqueSupermercadoTabelaHash.size(), 10);
@@ -54,7 +54,7 @@ TEST_F(TabelaHashTest, ForcarAumentoDeTabelaMultiplasVezes) {
 	criarTabela(estoqueSupermercadoTabelaHash,qtdadeRepeticoes,itens);
 	for (int i = 0; i < 5; i++) {
 		for (int j = 1; j <= qtdadeRepeticoes; j++) {
-			estoqueSupermercadoTabelaHash.contemChave(itens[i] + to_string(j));
+			EXPECT_TRUE(estoqueSupermercadoTabelaHash.contemChave(itens[i] + to_string(j)));
 		}
 	}
 	EXPECT_EQ(estoqueSupermercadoTabelaHash.size(), 5*qtdadeRepeticoes);
