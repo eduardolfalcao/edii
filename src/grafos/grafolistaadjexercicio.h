@@ -1,10 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 using namespace std;
-
-#define POS_INF 1000000000
-#define NEG_INF -1000000000
 
 class GrafoListaAdj {
 private:
