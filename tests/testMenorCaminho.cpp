@@ -1,9 +1,6 @@
 #include "pch.h"
-#include "../src/grafos/grafolistaadj.h"
+#include "../src/grafos/grafomenorcaminho.h"
 using namespace std;
-
-#define POS_INF 1000000000
-#define NEG_INF -1000000000
 
 class MenorCaminhoTest : public ::testing::Test {
 protected:
@@ -18,11 +15,11 @@ protected:
 	GrafoListaAdj* grafo;
 };
 
+/* Funcao auxiliar para construir o seguinte grafo ponderado:
+ * https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-ponderado-representacao-matriz-preenchido.png
+ * Note que aqui o grafo é representado com lista de adjacencias.
+ */
 void construirGrafoPonderado(GrafoListaAdj* grafo) {
-	//este é o grafo ponderado
-	//https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-ponderado-representacao-matriz-preenchido.png
-	//embora não estamos representando com matriz de adjacências
-
 	grafo->inserirArestaNaoDirecionada("v1", "v2", 6);
 	grafo->inserirArestaNaoDirecionada("v1", "v3", 4);
 	grafo->inserirArestaNaoDirecionada("v2", "v4", 5);
@@ -35,10 +32,13 @@ void construirGrafoPonderado(GrafoListaAdj* grafo) {
 	grafo->inserirArestaNaoDirecionada("v8", "v9", 8);
 }
 
+/* Funcao auxiliar para inserir uma sequencia de vertices comecando
+ * em ini e terminando em fim. Ex: v1, v2, v3, ..., v9.
+ */
 void inserirVertices(GrafoListaAdj* grafo, int ini, int fim) {
 	for (int i = ini; i <= fim; i++) {
 		string rotulo;
-		std::stringstream sstm;
+		stringstream sstm;
 		sstm << "v" << i;
 		rotulo = sstm.str();
 		grafo->inserirVertice(rotulo);
@@ -86,13 +86,13 @@ TEST_F(MenorCaminhoTest, BellmanFordGrafoSemCicloNegativo) {
 	free(distancias);
 }
 
-TEST_F(MenorCaminhoTest, BellmanFordGrafoComLacoNegativo) {
+TEST_F(MenorCaminhoTest, BellmanFordGrafoComCicloNegativo) {
 	inserirVertices(grafo, 1, 9);
 	construirGrafoPonderado(grafo);
 	grafo->inserirArestaNaoDirecionada("v1", "v1", -2);
 
 	//grafo com laço com peso negativo em v1
-	//como o grafo só tem um componente
+	//como o grafo so tem um componente e eh nao direcionado
 	//então todas as distâncias podem ser diminuídas
 	
 	int* distancias = grafo->bellmanFord("v1");
@@ -100,7 +100,7 @@ TEST_F(MenorCaminhoTest, BellmanFordGrafoComLacoNegativo) {
 		EXPECT_EQ(distancias[i], NEG_INF);
 	free(distancias);
 
-	//não interessa o vértice de origem,
+	//nao interessa o vértice de origem,
 	//todas as distâncias sempre podem ser diminuídas
 	distancias = grafo->bellmanFord("v5");
 	for (int i = 0; i < 9; i++)
@@ -115,39 +115,100 @@ TEST_F(MenorCaminhoTest, BellmanFordGrafoComLacoNegativo) {
 	free(distancias);
 }
 
-TEST_F(MenorCaminhoTest, BellmanFordGrafoCom2ComponentesECicloNegativo) {
+TEST_F(MenorCaminhoTest, BellmanFordGrafoCom2Componentes) {
 	//componente 1
 	inserirVertices(grafo, 1, 9);
-	construirGrafoPonderado(grafo);
-	grafo->inserirArestaNaoDirecionada("v1", "v1", -2);
-
-	//grafo com laço com peso negativo em v1
-	//como o grafo tem dois componentes
-	//então NÃO SÃO todas as distâncias QUE podem ser diminuídas
-	//as distâncias QUE podem ser diminuídas envolvem
-	//todos os vértices que são alcancáveis a partir de v1
-	//ou seja: v1, v2, v3, v4, v5, v6, v7, v8, v9 
+	construirGrafoPonderado(grafo);	
 	
 	//componente 2
 	inserirVertices(grafo, 10, 12);
 	grafo->inserirArestaNaoDirecionada("v10", "v11", 10);
 	grafo->inserirArestaNaoDirecionada("v10", "v12", 15);
 
+	//como o grafo tem dois componentes
+	//então NÃO SÃO todas as distâncias QUE podem ser diminuídas
+	//as distâncias QUE podem ser diminuídas envolvem
+	//todos os vértices que são alcancáveis a partir do vértice origem
+
+	int* distancias = grafo->bellmanFord("v10");
+	//vertices inalcancaveis pois estao em componente 
+	//diferente do componente do vertice de origem: v10
+	//{v1,v2,v3,v4,v5,v6,v7,v8,v9}
+	for (int i = 0; i < 9; i++)
+		EXPECT_EQ(distancias[i], POS_INF);
+	//vertices alcancaveis pois estao no mesmo componente 
+	//do vertice de origem: v10
+	//{v10,v11,v12}
+	EXPECT_EQ(distancias[9], 0);
+	EXPECT_EQ(distancias[10], 10);
+	EXPECT_EQ(distancias[11], 15);
+	free(distancias);
+
+	distancias = grafo->bellmanFord("v11");
+	//vertices inalcancaveis pois estao em componente 
+	//diferente do componente do vertice de origem: v11
+	//{v1,v2,v3,v4,v5,v6,v7,v8,v9}
+	for (int i = 0; i < 9; i++)
+		EXPECT_EQ(distancias[i], POS_INF);
+	//vertices alcancaveis pois estao no mesmo componente 
+	//do vertice de origem: v10
+	//{v10,v11,v12}
+	EXPECT_EQ(distancias[9], 10);
+	EXPECT_EQ(distancias[10], 0);
+	EXPECT_EQ(distancias[11], 25);
+	free(distancias);
+
+	distancias = grafo->bellmanFord("v12");
+	//vertices inalcancaveis pois estao em componente 
+	//diferente do componente do vertice de origem: v12
+	//{v1,v2,v3,v4,v5,v6,v7,v8,v9}
+	for (int i = 0; i < 9; i++)
+		EXPECT_EQ(distancias[i], POS_INF);
+	//vertices alcancaveis pois estao no mesmo componente 
+	//do vertice de origem: v10
+	//{v10,v11,v12}
+	EXPECT_EQ(distancias[9], 15);
+	EXPECT_EQ(distancias[10], 25);
+	EXPECT_EQ(distancias[11], 0);
+	free(distancias);
+}
+
+TEST_F(MenorCaminhoTest, BellmanFordGrafoCom2ComponentesECicloNegativo) {
+	//componente 1
+	inserirVertices(grafo, 1, 9);
+	construirGrafoPonderado(grafo);
+	//ciclo negativo (laco)
+	grafo->inserirArestaNaoDirecionada("v1", "v1", -2);
+
+	//componente 2
+	inserirVertices(grafo, 10, 12);
+	grafo->inserirArestaNaoDirecionada("v10", "v11", 10);
+	grafo->inserirArestaNaoDirecionada("v10", "v12", 15);
+
+
 	int* distancias = grafo->bellmanFord("v10");
 	//componente com ciclos negativos
 	//{v1,v2,v3,v4,v5,v6,v7,v8,v9}
 	for (int i = 0; i < 9; i++)
 		EXPECT_EQ(distancias[i], NEG_INF);
+
 	/* EXPLICAÇÃO PARA RESULTADO ACIMA */
-	//infelizmente, o BellmanFord não retorna POS_INF
+	//Infelizmente, o BellmanFord nao retorna POS_INF
 	//pois se o algoritmo encontrar um ciclo negativo 
 	//no grafo, então todos os nós do ciclo negativo
-	//recebem NEG_INF 
-	//isso acontece mesmo que não exista caminho entre
-	//v10 e {v1,v2,v3,v4,v5,v6,v7,v8,v9}
+	//recebem NEG_INF (mesmo que o mais intuitivo para nos
+	//eh que eles recebessem POS_INF). 
+	//Isso acontece mesmo que não exista caminho entre
+	//v10 e {v1,v2,v3,v4,v5,v6,v7,v8,v9}.
+	//Uma forma de obter POS_INF seria usar o algoritmo
+	//de coloracao pra detectar os componentes, e depois
+	//aplicar bellman-ford somente no componente que
+	//possui o vertice de origem (mas nao fiz isso nesse
+	//exercicio).
 	//===============================================
 	//componente sem ciclos negativos
 	//{v10,v11,v12}
+
 	EXPECT_EQ(distancias[9], 0);
 	EXPECT_EQ(distancias[10], 10);
 	EXPECT_EQ(distancias[11], 15);
