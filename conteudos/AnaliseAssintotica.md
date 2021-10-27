@@ -367,7 +367,7 @@ Portanto, uma outra forma de provar que **f(n) ∈ ω(g(n))** é através da an�
 ![alt text](imgs/limite-little-omega.jpg)
 
 Por exemplo:
-- **2n² ∈ o(n)**
+- **2n² ∈ ω(n)**
     - lim(n ⇾ ∞)  2n²/n
     - lim(n ⇾ ∞)  2n = ∞
 
