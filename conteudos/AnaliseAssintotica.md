@@ -430,7 +430,7 @@ double calculaDelta(double a, double b, double c){
     double delta = 0;           //1 ou c1
     delta = b*b;                //2 ou c2
     delta = delta - (4*a*c);    //4 ou c3
-    delta = sqrt(delta);        //lg(n), para n = b²-4ac
+    delta = sqrt(delta);        //O(lg(n)), para n = b²-4ac
     return delta;               //1 ou c4
 }                               //TcalculaDelta = c1 + c2 + c3 + c4 + lg(n)
                                 //TcalculaDelta = O(lg(n)), para n = b²-4ac
