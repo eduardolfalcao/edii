@@ -7,8 +7,7 @@ struct GrafoMatrizAdj {
     int** arestas;
     char** rotuloVertices;
     int verticesInseridos;
-    int maxNumVertices;     
-    //faz mais sentido ser apenas numVertices (consertar para a prox turma)
+    int maxNumVertices;
 };
 
 /**
