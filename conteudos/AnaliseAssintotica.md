@@ -292,7 +292,7 @@ Então vamos seguir a formalização:
 - Analisando a expressão com calma, percebe-se que a expressão da esquerda sempre será maior que a da direita se c=0 
 - No entanto, por definição *c precisa ser positivo*, então consideremos **c>0**
 - Por outro lado, eu consigo afirmar com segurança que para c=5, a inequação ainda se mantém verdadeira sempre que n>=0
-    - Logo, seguem alguns possíveis valores para c e n: **c ∈ (0,5] e n₀=0**
+    - Logo, seguem alguns possíveis valores para c e n: **c ∈ (0,5] e n₀>0**; (como n₀ pode ser ponto flutuante, basta dizer que n₀>0 ou escolher um valor positivo qualquer, como por exemplo, n₀=1)
     - ![alt text](imgs/omega-exemplo.png)
 - Note que na medida em que aumentarmos o valor de c, não conseguiremos encontrar um valor para n₀ de tal modo que satisfaça **f(n) >= c.g(n), para todo n>=n₀**
     - Por exemplo: abra o desmos e teste c=6
@@ -367,7 +367,7 @@ Portanto, uma outra forma de provar que **f(n) ∈ ω(g(n))** é através da an�
 ![alt text](imgs/limite-little-omega.jpg)
 
 Por exemplo:
-- **2n² ∈ o(n)**
+- **2n² ∈ ω(n)**
     - lim(n ⇾ ∞)  2n²/n
     - lim(n ⇾ ∞)  2n = ∞
 
@@ -430,7 +430,7 @@ double calculaDelta(double a, double b, double c){
     double delta = 0;           //1 ou c1
     delta = b*b;                //2 ou c2
     delta = delta - (4*a*c);    //4 ou c3
-    delta = sqrt(delta);        //lg(n), para n = b²-4ac
+    delta = sqrt(delta);        //O(lg(n)), para n = b²-4ac
     return delta;               //1 ou c4
 }                               //TcalculaDelta = c1 + c2 + c3 + c4 + lg(n)
                                 //TcalculaDelta = O(lg(n)), para n = b²-4ac
