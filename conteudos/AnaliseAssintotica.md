@@ -730,15 +730,13 @@ Exercício: calcule iterativamente a complexidade de algoritmos descritos pelas 
 - Cálculo principal: T(n) = n + n-1 + T(n-2) = 2n - 1 + T(n-2)
     - Cálculo aux: T(n-2) = n-2 + T((n-2)-1) = n - 2 + T(n-3)
 - Cálculo principal: T(n) = 2n - 1 + n - 2 + T(n-3) = 3n - 3 + T(n-3)
-- ...
-- O que estamos procurando é o caso básico, i.e., T(1)
-    - isto irá acontecer quando chegarmos em T(n-(n-1))
-- Cálculo principal: T(n) = cn - c + T(n-c)
-    - portanto, fazemos c = n-1
-- Cálculo principal: T(n) = (n-1)\*n - n - 1 + T(n-(n-1))
-- Cálculo principal: T(n) = n² - n - n - 1 + T(1)
-- Cálculo principal: T(n) = n² - 2n
+    - Cálculo aux: T(n-3) = n-3 + T((n-3)-1) = n-3 + T(n-4)
+- Cálculo principal: T(n) = n + (n-1) + (n-2) + (n-3) + T(n-4)
+- Temos uma PA de razão -1
+- Aplicando no somatório, teremos
+    - T(n) = n \* (n-1) / 2
 - Portanto, **T(n) ∈ O(n²)**
+
 
 - **Cálculo principal: T(n) = c + T(n/2)**
     - Cálculo aux: T(n/2) = c + T((n/2)/2) = c + T(n/4)
