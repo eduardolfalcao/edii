@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "../src/grafos/grafonavegacao.h"
+#include "../src/grafos/grafonavegacaoexercicioalunos.h"
 using namespace std;
 
 class GrafoListaAdjNavegacaoTest : public ::testing::Test {
@@ -18,7 +18,7 @@ protected:
 /* Funcao auxiliar para construir o seguinte grafo nao ponderado:
  * https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-rotulado-laco.png
  */
-void construirGrafoNaoPonderado(GrafoListaAdj* grafo) {
+void construirGrafoNaoPonderadoNaoDirecionado(GrafoListaAdj* grafo) {
 	grafo->inserirArestaNaoDirecionada("v1", "v2");
 	grafo->inserirArestaNaoDirecionada("v1", "v3");
 	grafo->inserirArestaNaoDirecionada("v2", "v4");
@@ -30,6 +30,25 @@ void construirGrafoNaoPonderado(GrafoListaAdj* grafo) {
 	grafo->inserirArestaNaoDirecionada("v6", "v8");
 	grafo->inserirArestaNaoDirecionada("v8", "v9");
 	grafo->inserirArestaNaoDirecionada("v9", "v9");
+}
+
+/* Funcao auxiliar para construir o seguinte grafo direcionado nao ponderado:
+ * https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-tad-direcionado-testes-unidade.png
+ */
+void construirGrafoNaoPonderadoDirecionado(GrafoListaAdj* grafo) {
+	grafo->inserirArestaDirecionada("v1", "v2");
+	grafo->inserirArestaDirecionada("v1", "v3");
+	grafo->inserirArestaDirecionada("v2", "v4");
+	grafo->inserirArestaDirecionada("v3", "v5");
+	grafo->inserirArestaDirecionada("v4", "v3");
+	grafo->inserirArestaDirecionada("v5", "v9");
+	grafo->inserirArestaDirecionada("v6", "v4");
+	grafo->inserirArestaDirecionada("v6", "v8");
+	grafo->inserirArestaDirecionada("v7", "v4");
+	//v8 nao tem arestas partindo dele
+	grafo->inserirArestaDirecionada("v9", "v8");
+	grafo->inserirArestaDirecionada("v9", "v9");
+	
 }
 
 /* Funcao auxiliar para adicionar vertices em uma sequencia.
@@ -46,19 +65,22 @@ void inserirVertices(GrafoListaAdj* grafo, int ini, int fim) {
 }
 
 TEST_F(GrafoListaAdjNavegacaoTest, haCaminho) {
-	//inserimos de v1 aa v10, e v10 ficarah desconectado do componente principal
+	//inserimos de v1 a v10, e v10 ficarah desconectado do componente principal
 	inserirVertices(grafo,1,10);	
-	construirGrafoNaoPonderado(grafo);	
-
-	EXPECT_FALSE(grafo->haCaminho("v1","v1"));
-	EXPECT_TRUE(grafo->haCaminho("v9", "v9"));
+	construirGrafoNaoPonderadoDirecionado(grafo);		
+		
 	EXPECT_TRUE(grafo->haCaminho("v1","v2"));
-	EXPECT_TRUE(grafo->haCaminho("v1","v9"));
+	EXPECT_TRUE(grafo->haCaminho("v1","v4"));
+	EXPECT_TRUE(grafo->haCaminho("v6", "v9"));
+	EXPECT_TRUE(grafo->haCaminho("v9", "v9"));
 
 	//note que v10 nao estah conectado	
 	//logo, não existe caminhos chegando ou partindo de v10
 	//embora nao exista v10 no grafo da url descrita, nos adicionamos v10 (linha 50)
 	EXPECT_FALSE(grafo->haCaminho("v1","v10"));
+	EXPECT_FALSE(grafo->haCaminho("v2", "v1"));
+	EXPECT_FALSE(grafo->haCaminho("v1", "v1"));
+	EXPECT_FALSE(grafo->haCaminho("v6", "v7"));
 	EXPECT_FALSE(grafo->haCaminho("v10","v5"));
 }
 
@@ -66,7 +88,7 @@ TEST_F(GrafoListaAdjNavegacaoTest, colorirGrafo1Comp) {
 	//inserimos de v1 aa v9
 	//esse grafo tem apenas um componente
 	inserirVertices(grafo,1,9);
-	construirGrafoNaoPonderado(grafo);
+	construirGrafoNaoPonderadoNaoDirecionado(grafo);
 	
 	EXPECT_EQ(grafo->colorir(), 1);
 	for (int i = 1; i <= 8; i++) {
@@ -154,7 +176,7 @@ TEST_F(GrafoListaAdjNavegacaoTest, colorirGrafo5Comp) {
 
 TEST_F(GrafoListaAdjNavegacaoTest, bfsGrafo1CompNaoPonderado) {
 	inserirVertices(grafo, 1, 9);
-	construirGrafoNaoPonderado(grafo);
+	construirGrafoNaoPonderadoNaoDirecionado(grafo);
 
 	int* distancias = grafo->bfs("v1");
 	EXPECT_EQ(distancias[0], 0);
