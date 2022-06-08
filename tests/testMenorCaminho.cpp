@@ -190,25 +190,9 @@ TEST_F(MenorCaminhoTest, BellmanFordGrafoCom2ComponentesECicloNegativo) {
 	//componente com ciclos negativos
 	//{v1,v2,v3,v4,v5,v6,v7,v8,v9}
 	for (int i = 0; i < 9; i++)
-		EXPECT_EQ(distancias[i], NEG_INF);
-
-	/* EXPLICAÇÃO PARA RESULTADO ACIMA */
-	//Infelizmente, o BellmanFord nao retorna POS_INF
-	//pois se o algoritmo encontrar um ciclo negativo 
-	//no grafo, então todos os nós do ciclo negativo
-	//recebem NEG_INF (mesmo que o mais intuitivo para nos
-	//eh que eles recebessem POS_INF). 
-	//Isso acontece mesmo que não exista caminho entre
-	//v10 e {v1,v2,v3,v4,v5,v6,v7,v8,v9}.
-	//Uma forma de obter POS_INF seria usar o algoritmo
-	//de coloracao pra detectar os componentes, e depois
-	//aplicar bellman-ford somente no componente que
-	//possui o vertice de origem (mas nao fiz isso nesse
-	//exercicio).
-	//===============================================
+		EXPECT_EQ(distancias[i], POS_INF);
 	//componente sem ciclos negativos
 	//{v10,v11,v12}
-
 	EXPECT_EQ(distancias[9], 0);
 	EXPECT_EQ(distancias[10], 10);
 	EXPECT_EQ(distancias[11], 15);
@@ -218,7 +202,7 @@ TEST_F(MenorCaminhoTest, BellmanFordGrafoCom2ComponentesECicloNegativo) {
 	//componente com ciclos negativos
 	//{v1,v2,v3,v4,v5,v6,v7,v8,v9}
 	for (int i = 0; i < 9; i++)
-		EXPECT_EQ(distancias[i], NEG_INF);
+		EXPECT_EQ(distancias[i], POS_INF);
 	//componente sem ciclos negativos
 	//{v10,v11,v12}
 	EXPECT_EQ(distancias[9], 10);
@@ -230,7 +214,7 @@ TEST_F(MenorCaminhoTest, BellmanFordGrafoCom2ComponentesECicloNegativo) {
 	//componente com ciclos negativos
 	//{v1,v2,v3,v4,v5,v6,v7,v8,v9}
 	for (int i = 0; i < 9; i++)
-		EXPECT_EQ(distancias[i], NEG_INF);
+		EXPECT_EQ(distancias[i], POS_INF);
 	//componente sem ciclos negativos
 	//{v10,v11,v12}
 	EXPECT_EQ(distancias[9], 15);
