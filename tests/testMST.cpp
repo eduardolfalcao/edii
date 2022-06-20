@@ -30,13 +30,13 @@ void inserirVertices(GrafoListaAdj* grafo, int ini, int fim) {
 
 int somaArestasMST(GrafoListaAdj* grafoMST) {
 	int pesoArestas = 0;
-	cout << "Tamanho: " << to_string(grafoMST->getArestas().size()) << endl;
+	//cout << "Tamanho: " << to_string(grafoMST->getArestas().size()) << endl;
 	for (int vOrigem = 0; vOrigem < grafoMST->getArestas().size(); vOrigem++) {
-		cout << "Qtdade de Arestas com origem em " << to_string(vOrigem) <<": " << to_string(grafoMST->getArestas().at(vOrigem).size()) << endl;
+		//cout << "Qtdade de Arestas com origem em " << to_string(vOrigem) <<": " << to_string(grafoMST->getArestas().at(vOrigem).size()) << endl;
 		if (!grafoMST->getArestas().at(vOrigem).empty()) {
 			//for (pair<int, int> arestaSaindoDeVOrigem : grafoMST->getArestas().at(vOrigem)) {
 			for (int i = 0; i < grafoMST->getArestas().at(vOrigem).size(); i++) {
-				cout << "Par: (" << to_string(grafoMST->getArestas().at(vOrigem).at(i).first) << "," << to_string(grafoMST->getArestas().at(vOrigem).at(i).second) << ")" << endl;
+				//cout << "Par: (" << to_string(grafoMST->getArestas().at(vOrigem).at(i).first) << "," << to_string(grafoMST->getArestas().at(vOrigem).at(i).second) << ")" << endl;
 				//first é o indice do vertice, second é o peso (caso o grafo seja ponderado)
 				pesoArestas += grafoMST->getArestas().at(vOrigem).at(i).second;
 			}
@@ -45,7 +45,7 @@ int somaArestasMST(GrafoListaAdj* grafoMST) {
 	return pesoArestas;
 }
 
-TEST_F(MSTTest, Grafo1) {
+TEST_F(MSTTest, Grafo1MinST) {
 	inserirVertices(grafo, 1, 9);
 	
 	//https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-ponderado-representacao-matriz-preenchido.png
@@ -60,7 +60,8 @@ TEST_F(MSTTest, Grafo1) {
 	grafo->inserirArestaNaoDirecionada("v6", "v8", 6);
 	grafo->inserirArestaNaoDirecionada("v8", "v9", 8);
 
-	GrafoListaAdj* grafoMST = grafo->KruskalMST();
+	bool min = true;
+	GrafoListaAdj* grafoMST = grafo->KruskalMST(min);
 
 	int pesoArestas = somaArestasMST(grafoMST);
 	//78 pois cada aresta não direcionada é 
@@ -68,7 +69,7 @@ TEST_F(MSTTest, Grafo1) {
 	EXPECT_EQ(pesoArestas, 78);
 }
 
-TEST_F(MSTTest, Grafo2) {
+TEST_F(MSTTest, Grafo2MinST) {
 	inserirVertices(grafo, 1, 10);
 	
 	//Grafo: https://www.youtube.com/watch?v=JZBQLXgSGfs&t
@@ -91,10 +92,67 @@ TEST_F(MSTTest, Grafo2) {
 	grafo->inserirArestaNaoDirecionada("v8", "v9", 6);
 	grafo->inserirArestaNaoDirecionada("v9", "v10", 0);
 
-	GrafoListaAdj* grafoMST = grafo->KruskalMST();
+	bool min = true;
+	GrafoListaAdj* grafoMST = grafo->KruskalMST(min);
 
 	int pesoArestas = somaArestasMST(grafoMST);
 	//28 pois cada aresta não direcionada é 
 	//representado por 2 arestas direcionadas
 	EXPECT_EQ(pesoArestas, 28);
+}
+
+TEST_F(MSTTest, Grafo1MaxST) {
+	inserirVertices(grafo, 1, 9);
+
+	//https://github.com/eduardolfalcao/edii/blob/master/conteudos/imgs/grafo-ponderado-representacao-matriz-preenchido.png
+	grafo->inserirArestaNaoDirecionada("v1", "v2", 6);
+	grafo->inserirArestaNaoDirecionada("v1", "v3", 4);
+	grafo->inserirArestaNaoDirecionada("v2", "v4", 5);
+	grafo->inserirArestaNaoDirecionada("v3", "v4", 2);
+	grafo->inserirArestaNaoDirecionada("v3", "v5", 4);
+	grafo->inserirArestaNaoDirecionada("v4", "v6", 5);
+	grafo->inserirArestaNaoDirecionada("v4", "v7", 5);
+	grafo->inserirArestaNaoDirecionada("v5", "v9", 9);
+	grafo->inserirArestaNaoDirecionada("v6", "v8", 6);
+	grafo->inserirArestaNaoDirecionada("v8", "v9", 8);
+
+	bool min = false;
+	GrafoListaAdj* grafoMST = grafo->KruskalMST(min);
+
+	int pesoArestas = somaArestasMST(grafoMST);
+	//96 pois cada aresta não direcionada é 
+	//representado por 2 arestas direcionadas
+	EXPECT_EQ(pesoArestas, 96);
+}
+
+TEST_F(MSTTest, Grafo3MaxST) {
+	inserirVertices(grafo, 1, 10);
+
+	//Grafo: https://youtu.be/JZBQLXgSGfs?t=36
+	grafo->inserirArestaNaoDirecionada("v1", "v2", 5);
+	grafo->inserirArestaNaoDirecionada("v1", "v4", 9);
+	grafo->inserirArestaNaoDirecionada("v1", "v5", 1);
+	grafo->inserirArestaNaoDirecionada("v2", "v3", 4);
+	grafo->inserirArestaNaoDirecionada("v2", "v4", 2);
+	grafo->inserirArestaNaoDirecionada("v3", "v8", 4);
+	grafo->inserirArestaNaoDirecionada("v3", "v9", 1);
+	grafo->inserirArestaNaoDirecionada("v3", "v10", 8);
+	grafo->inserirArestaNaoDirecionada("v4", "v5", 2);
+	grafo->inserirArestaNaoDirecionada("v4", "v6", 5);
+	grafo->inserirArestaNaoDirecionada("v4", "v7", 11);
+	grafo->inserirArestaNaoDirecionada("v4", "v8", 2);
+	grafo->inserirArestaNaoDirecionada("v5", "v6", 1);
+	grafo->inserirArestaNaoDirecionada("v6", "v7", 7);
+	grafo->inserirArestaNaoDirecionada("v7", "v8", 1);
+	grafo->inserirArestaNaoDirecionada("v7", "v9", 4);
+	grafo->inserirArestaNaoDirecionada("v8", "v9", 6);
+	grafo->inserirArestaNaoDirecionada("v9", "v10", 0);
+
+	bool min = false;
+	GrafoListaAdj* grafoMST = grafo->KruskalMST(min);
+
+	int pesoArestas = somaArestasMST(grafoMST);
+	//112 pois cada aresta não direcionada é 
+	//representado por 2 arestas direcionadas
+	EXPECT_EQ(pesoArestas, 112);
 }

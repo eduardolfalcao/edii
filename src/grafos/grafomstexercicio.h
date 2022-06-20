@@ -87,13 +87,13 @@ public:
     //das arestas com menor peso (que faz parte do
     //algoritmo de Kruskal)
     class Aresta {
-    public:
-        int origem;
-        int destino;
-        int peso;
-        Aresta(int origem, int destino, int peso)
-            : origem(origem), destino(destino), peso(peso)
-        {}
+        public:
+            int origem;
+            int destino;
+            int peso;
+            Aresta(int origem, int destino, int peso)
+                : origem(origem), destino(destino), peso(peso)
+            {}
     };
 
     //sobrescrever operator< para que a priority_queue
@@ -102,7 +102,13 @@ public:
         //IMPLEMENTAR
     }
 
-    GrafoListaAdj* KruskalMST() {
+    //a funcao sera usada para criar uma arvore de espalhamento
+    //minimo ou máximo, de acordo com o argumento
+    GrafoListaAdj* KruskalMST(bool min) {
+    
+    }
+
+    /*GrafoListaAdj* KruskalMST() {
         //IMPLEMENTAR
 
         //instanciamos um novo grafo, que armazenara
@@ -122,7 +128,7 @@ public:
             //una-os, e adicione a aresta no MST
 
         return mst;
-    }   
+    }*/   
 
     vector<string> getVertices() {
         return vertices;
